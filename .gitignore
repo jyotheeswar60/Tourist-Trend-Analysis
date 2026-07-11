@@ -1,0 +1,47 @@
+# ── Python ──────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+*.egg
+
+# ── Virtual Environment ──────────────────────
+venv/
+.venv/
+env/
+ENV/
+
+# ── Environment Variables ────────────────────
+.env
+*.env
+
+# ── Database Files ───────────────────────────
+*.db
+*.sqlite
+*.sqlite3
+
+# ── IDE ──────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ── Logs ─────────────────────────────────────
+*.log
+logs/
+
+# ── Testing ───────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ── Jupyter ───────────────────────────────────
+.ipynb_checkpoints/
+
+# ── Dash ──────────────────────────────────────
+.dash_plot_cache/

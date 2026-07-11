@@ -1,0 +1,220 @@
+/* =========================================================
+   Tourism Analytics — Animations & Transitions
+   animations.css
+   ========================================================= */
+
+/* ─────────────────────────────────────────────────────────
+   KPI Counter Animation (driven by clientside_callback)
+   ───────────────────────────────────────────────────────── */
+.kpi-value {
+  transition: none;    /* JS handles animation; CSS handles everything else */
+}
+
+/* ─────────────────────────────────────────────────────────
+   Page Entrance Animation
+   ───────────────────────────────────────────────────────── */
+.page-enter {
+  animation: pageEnter 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────
+   Card Stagger (applied programmatically via JS class)
+   ───────────────────────────────────────────────────────── */
+.card-animate {
+  animation: cardEntrance 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.card-animate:nth-child(1) { animation-delay: 0.05s; }
+.card-animate:nth-child(2) { animation-delay: 0.10s; }
+.card-animate:nth-child(3) { animation-delay: 0.15s; }
+.card-animate:nth-child(4) { animation-delay: 0.20s; }
+.card-animate:nth-child(5) { animation-delay: 0.25s; }
+.card-animate:nth-child(6) { animation-delay: 0.30s; }
+
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────
+   Fade In / Out
+   ───────────────────────────────────────────────────────── */
+.fade-in {
+  animation: fadeIn 0.25s ease forwards;
+}
+
+.fade-out {
+  animation: fadeOut 0.2s ease forwards;
+}
+
+@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+/* ─────────────────────────────────────────────────────────
+   Slide In (for filter panel, tooltips)
+   ───────────────────────────────────────────────────────── */
+.slide-in-down {
+  animation: slideInDown 0.22s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes slideInDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ─────────────────────────────────────────────────────────
+   Pulse (for live indicators)
+   ───────────────────────────────────────────────────────── */
+.pulse-ring {
+  position: relative;
+  display: inline-block;
+}
+
+.pulse-ring::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid var(--green);
+  animation: pulseRing 2s ease-out infinite;
+  opacity: 0;
+}
+
+@keyframes pulseRing {
+  0%   { transform: scale(0.8); opacity: 0.8; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* ─────────────────────────────────────────────────────────
+   Gradient Border (for highlighted cards)
+   ───────────────────────────────────────────────────────── */
+.gradient-border {
+  position: relative;
+  background-clip: padding-box;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 50%, var(--cyan) 100%);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity var(--t-base);
+}
+
+.gradient-border:hover::before { opacity: 1; }
+
+/* ─────────────────────────────────────────────────────────
+   Sheen Effect (premium hover shine on KPI cards)
+   ───────────────────────────────────────────────────────── */
+.sheen {
+  position: relative;
+  overflow: hidden;
+}
+
+.sheen::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -75%;
+  width: 50%;
+  height: 200%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-25deg);
+  transition: left 0.6s ease;
+}
+
+.sheen:hover::after {
+  left: 125%;
+}
+
+/* ─────────────────────────────────────────────────────────
+   Floating (for selected chart highlights)
+   ───────────────────────────────────────────────────────── */
+@keyframes floating {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-4px); }
+}
+
+.floating {
+  animation: floating 3s ease-in-out infinite;
+}
+
+/* ─────────────────────────────────────────────────────────
+   Trend Arrow Animations
+   ───────────────────────────────────────────────────────── */
+.trend-up {
+  animation: trendUp 0.4s var(--t-bounce) forwards;
+}
+
+.trend-down {
+  animation: trendDown 0.4s var(--t-bounce) forwards;
+}
+
+@keyframes trendUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes trendDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─────────────────────────────────────────────────────────
+   Notification Badge Bounce
+   ───────────────────────────────────────────────────────── */
+.badge-bounce {
+  animation: badgeBounce 0.5s var(--t-bounce) forwards;
+}
+
+@keyframes badgeBounce {
+  from { transform: scale(0); }
+  to   { transform: scale(1); }
+}
+
+/* ─────────────────────────────────────────────────────────
+   Theme Transition (applied on html element)
+   ───────────────────────────────────────────────────────── */
+.theme-transitioning *,
+.theme-transitioning *::before,
+.theme-transitioning *::after {
+  transition:
+    background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
