@@ -2,31 +2,40 @@
 # Tourism Analytics Platform — Python Dependencies
 # ═══════════════════════════════════════════════════════
 # Install: pip install -r requirements.txt
+#
+# NOTE: Versions are unpinned (>=) to ensure compatibility across
+# Python 3.11–3.14. Tested with the versions shown in comments.
+# For a reproducible lock file, run: pip freeze > requirements-lock.txt
 
 # ── Core Framework ──────────────────────────────────────
-dash==2.18.2
-dash-bootstrap-components==1.6.0
-dash-iconify==0.1.2
+dash>=4.0.0                  # tested: 4.4.0
+dash-bootstrap-components>=2.0.0  # tested: 2.0.4
+dash-iconify>=0.1.2
 
 # ── Data & Visualisation ────────────────────────────────
-plotly==5.22.0
-pandas==2.2.2
-numpy==1.26.4
-pyarrow==16.1.0
+plotly>=5.0.0                # tested: 6.8.0
+pandas>=2.0.0                # tested: 3.0.3
+numpy>=1.24.0                # tested: latest
+pyarrow>=10.0.0              # tested: latest
 
 # ── Database ────────────────────────────────────────────
-sqlalchemy==2.0.30
-# psycopg2-binary==2.9.9   # Uncomment for PostgreSQL
+sqlalchemy>=2.0.0            # tested: 2.0.51
+# psycopg2-binary>=2.9.0    # Uncomment for PostgreSQL on Render
 
 # ── Statistical / Forecasting ───────────────────────────
-scipy==1.13.1
-statsmodels==0.14.2
+scipy>=1.10.0                # used for moving average & regression
+
+# statsmodels — optional; only install if wheels are available for your
+# Python version. Falls back to scipy-only forecasting if not present.
+# statsmodels>=0.14.0
 
 # ── Performance ─────────────────────────────────────────
-flask-caching==2.3.0
+flask-caching>=2.0.0         # tested: 2.4.1
 
 # ── Configuration ───────────────────────────────────────
-python-dotenv==1.0.1
+python-dotenv>=1.0.0
 
 # ── Production Server ───────────────────────────────────
-gunicorn==22.0.0
+# gunicorn is Linux-only (Render runs Linux). Do NOT install on Windows.
+# It is listed here for Render's build step.
+gunicorn>=20.0.0

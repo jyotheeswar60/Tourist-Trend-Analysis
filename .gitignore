@@ -18,10 +18,13 @@ ENV/
 .env
 *.env
 
-# ── Database Files ───────────────────────────
-*.db
-*.sqlite
-*.sqlite3
+# ── Database Files ───────────────────────────────────────
+# NOTE: data/cleaned/tourism.db IS committed intentionally.
+# Render free tier has no persistent disk, so the pre-built DB
+# must be included in the repo. Only ignore root-level test DBs.
+/*.db
+/*.sqlite
+/*.sqlite3
 
 # ── IDE ──────────────────────────────────────
 .vscode/

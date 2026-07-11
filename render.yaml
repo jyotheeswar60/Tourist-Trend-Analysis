@@ -1,5 +1,10 @@
 # render.yaml — Render.com deployment configuration
-# Deploy: push to GitHub, connect repo on render.com, done.
+# ─────────────────────────────────────────────────
+# Deploy steps:
+#   1. Push this repo to GitHub
+#   2. Connect repo on render.com → New Web Service
+#   3. Render auto-detects render.yaml and uses these settings
+#   4. No manual configuration needed
 
 services:
   - type: web
@@ -8,13 +13,17 @@ services:
     region: oregon
     plan: free
 
-    # Build step: install all Python dependencies
-    buildCommand: pip install -r requirements.txt
+    # Build step: install deps then pre-load SQLite DB from CSV
+    # The DB must be pre-built because Render free tier has no persistent disk.
+    buildCommand: |
+      pip install -r requirements.txt &&
+      python -m database.loader
 
-    # Start: Gunicorn WSGI server, 2 workers for free tier
+    # Production server: Gunicorn with 2 workers (fits Render free tier RAM)
+    # $PORT is injected automatically by Render
     startCommand: gunicorn wsgi:server --bind 0.0.0.0:$PORT --workers 2 --timeout 120
 
-    # Environment variables (set in Render dashboard for secrets)
+    # Environment variables
     envVars:
       - key: DEBUG
         value: "false"
@@ -24,7 +33,9 @@ services:
         value: "SimpleCache"
       - key: CACHE_TIMEOUT
         value: "600"
-      # For PostgreSQL (optional — uncomment and set in Render dashboard):
+      - key: PYTHON_VERSION
+        value: "3.11.0"
+      # For PostgreSQL (set in Render dashboard, not here):
       # - key: DATABASE_URL
       #   fromDatabase:
       #     name: tourism-db
