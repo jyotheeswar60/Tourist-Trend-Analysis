@@ -133,38 +133,6 @@
 }
 
 
-/* ─────────────────────────────────────────────────────────
-   03. CSS VARIABLES — LIGHT MODE
-   ───────────────────────────────────────────────────────── */
-.light-mode {
-  --bg-app:         #F0F4FF;
-  --bg-surface:     #FFFFFF;
-  --bg-card:        #FFFFFF;
-  --bg-card-hover:  #F8FAFF;
-  --bg-sidebar:     #0A1020;        /* sidebar stays dark — a popular SaaS pattern */
-  --bg-navbar:      rgba(255, 255, 255, 0.92);
-  --bg-input:       #F1F5F9;
-  --bg-hover:       rgba(99, 102, 241, 0.06);
-  --bg-active:      rgba(99, 102, 241, 0.10);
-  --bg-skeleton:    linear-gradient(90deg, #E2E8F0 25%, #CBD5E1 50%, #E2E8F0 75%);
-
-  --text-primary:   #0F172A;
-  --text-secondary: #475569;
-  --text-muted:     #94A3B8;
-  --text-accent:    #4F46E5;
-  --text-inverse:   #F1F5F9;
-
-  --border:         rgba(0, 0, 0, 0.07);
-  --border-hover:   rgba(0, 0, 0, 0.14);
-  --border-strong:  rgba(0, 0, 0, 0.2);
-
-  --shadow-xs:      0 1px 2px rgba(0,0,0,0.06);
-  --shadow-sm:      0 2px 8px rgba(0,0,0,0.08);
-  --shadow-md:      0 4px 20px rgba(0,0,0,0.10);
-  --shadow-lg:      0 8px 40px rgba(0,0,0,0.12);
-  --shadow-accent:  0 0 30px rgba(99,102,241,0.15);
-}
-
 
 /* ─────────────────────────────────────────────────────────
    04. RESET & BASE
@@ -663,9 +631,9 @@ input, select, textarea {
 }
 
 .kpi-card:hover {
-  border-color: var(--border-hover);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  border-color: var(--accent-border);
+  box-shadow: var(--shadow-md), var(--shadow-accent);
+  transform: translateY(-4px);
 }
 
 .kpi-card:hover::after {

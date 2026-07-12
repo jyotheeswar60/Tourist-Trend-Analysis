@@ -56,38 +56,6 @@ def create_navbar() -> html.Div:
                             html.Span("Live"),
                         ],
                     ),
-
-                    # Refresh button
-                    html.Button(
-                        id="refresh-btn",
-                        className="navbar-icon-btn",
-                        title="Refresh data",
-                        n_clicks=0,
-                        children=DashIconify(icon="lucide:refresh-cw", width=16),
-                    ),
-
-                    # Divider
-                    html.Div(className="navbar-divider"),
-
-                    # Theme toggle
-                    html.Button(
-                        id="theme-toggle-btn",
-                        className="navbar-icon-btn",
-                        title="Toggle theme",
-                        n_clicks=0,
-                        children=DashIconify(
-                            id="theme-toggle-icon",
-                            icon="lucide:sun",
-                            width=17,
-                        ),
-                    ),
-
-                    # User avatar
-                    html.Div(
-                        className="navbar-avatar",
-                        title="Portfolio Project",
-                        children="TA",
-                    ),
                 ],
             ),
         ],

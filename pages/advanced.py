@@ -156,7 +156,8 @@ def update_adv(years, countries):
             colorscale="RdBu", zmin=-1, zmax=1,
             text=corr_df.round(2).values, texttemplate="%{text}"
         ))
-    fig_corr.update_layout(**themed_layout(True), margin=dict(l=120, b=100))
+    fig_corr.update_layout(**themed_layout(True))
+    fig_corr.update_layout(margin=dict(l=120, b=100))
 
     # 3. Stats Table
     table = html.Div("No data")

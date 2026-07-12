@@ -8,7 +8,7 @@ from services.data_service import (
     get_monthly_visitors, get_yearly_summary, get_seasonal_trends,
     get_quarterly_trends, get_type_trends, get_moving_average, get_filter_options,
 )
-from utils.chart_themes import themed_layout, PRIMARY_COLORS, SEASON_COLORS, TYPE_COLORS
+from utils.chart_themes import themed_layout, apply_empty_state_annotation, PRIMARY_COLORS, SEASON_COLORS, TYPE_COLORS
 from utils.chart_config import GRAPH_CONFIG
 
 dash.register_page(__name__, path="/trends", name="Tourism Trends",
@@ -83,18 +83,27 @@ layout = html.Div(className="page-enter", children=[
     # Monthly with MA — full width
     html.Div(className="chart-card", children=[
         html.Div(className="chart-card-header", children=[html.Span("Monthly Arrivals + 3-Month Moving Average", className="chart-card-title")]),
-        dcc.Graph(id="trends-monthly-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
+        dcc.Loading(
+            dcc.Graph(id="trends-monthly-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
+            type="circle", color="#6366F1"
+        ),
     ]),
 
     # Yearly + Quarterly heatmap
     html.Div(className="chart-grid", children=[
         html.Div(className="chart-card", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Yearly Visitor Comparison", className="chart-card-title")]),
-            dcc.Graph(id="trends-yearly-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
+            dcc.Loading(
+                dcc.Graph(id="trends-yearly-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
         html.Div(className="chart-card", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Quarterly Heatmap", className="chart-card-title")]),
-            dcc.Graph(id="trends-quarterly-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
+            dcc.Loading(
+                dcc.Graph(id="trends-quarterly-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
     ]),
 
@@ -102,11 +111,17 @@ layout = html.Div(className="page-enter", children=[
     html.Div(className="chart-grid", children=[
         html.Div(className="chart-card", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Seasonal Trends by Year", className="chart-card-title")]),
-            dcc.Graph(id="trends-seasonal-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
+            dcc.Loading(
+                dcc.Graph(id="trends-seasonal-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
         html.Div(className="chart-card", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Tourist Type Mix Over Time", className="chart-card-title")]),
-            dcc.Graph(id="trends-type-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
+            dcc.Loading(
+                dcc.Graph(id="trends-type-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
     ]),
 
@@ -168,7 +183,13 @@ def update_trends(years, countries, types):
     if not monthly.empty:
         grp = monthly.groupby(["Year", "Month"])["Visitors"].sum().reset_index().sort_values(["Year", "Month"])
         grp["Period"] = range(len(grp))
-        grp["Label"] = grp.apply(lambda r: f"{MONTH_NAMES[r['Month']-1]} {r['Year']}", axis=1)
+        grp["Label"] = grp.apply(lambda r: f"{MONTH_NAMES[int(r['Month'])-1]} {int(r['Year'])}", axis=1)
+    if monthly.empty:
+        apply_empty_state_annotation(fig_monthly)
+    else:
+        grp = monthly.groupby(["Year", "Month"])["Visitors"].sum().reset_index().sort_values(["Year", "Month"])
+        grp["Period"] = range(len(grp))
+        grp["Label"] = grp.apply(lambda r: f"{MONTH_NAMES[int(r['Month'])-1]} {int(r['Year'])}", axis=1)
         fig_monthly.add_trace(go.Scatter(
             x=grp["Label"], y=grp["Visitors"], name="Monthly Visitors",
             mode="lines", line=dict(color="#6366F1", width=1.5),
@@ -180,13 +201,16 @@ def update_trends(years, countries, types):
             x=grp["Label"], y=grp["MA3"], name="3-Month MA",
             mode="lines", line=dict(color="#F59E0B", width=2, dash="dash"),
         ))
-    fig_monthly.update_layout(**themed_layout(True),
-                               xaxis_title="Month", yaxis_title="Visitors",
-                               xaxis=dict(tickangle=-45))
+        fig_monthly.update_layout(**themed_layout(True))
+        fig_monthly.update_layout(
+                                   xaxis_title="Month", yaxis_title="Visitors",
+                                   xaxis=dict(tickangle=-45))
 
     # ── Yearly bar ───────────────────────────────────────────────────────
     fig_yearly = go.Figure()
-    if not yearly.empty:
+    if yearly.empty:
+        apply_empty_state_annotation(fig_yearly)
+    else:
         colors_y = ["#EF4444" if g < 0 else "#10B981" for g in yearly["GrowthPct"].fillna(0)]
         fig_yearly.add_trace(go.Bar(x=yearly["Year"].astype(str), y=yearly["Visitors"],
                                      marker_color="#6366F1", name="Visitors"))
@@ -197,11 +221,13 @@ def update_trends(years, countries, types):
                     text=f"{row['GrowthPct']:+.1f}%", showarrow=False,
                     yshift=10, font=dict(color=colors_y[i], size=11)
                 )
-    fig_yearly.update_layout(**themed_layout(True), xaxis_title="Year", yaxis_title="Visitors")
+        fig_yearly.update_layout(**themed_layout(True), xaxis_title="Year", yaxis_title="Visitors")
 
     # ── Quarterly heatmap ────────────────────────────────────────────────
     fig_quarterly = go.Figure()
-    if not quarterly.empty:
+    if quarterly.empty:
+        apply_empty_state_annotation(fig_quarterly)
+    else:
         pivot = quarterly.groupby(["Year", "Quarter"])["Visitors"].sum().unstack(fill_value=0)
         fig_quarterly.add_trace(go.Heatmap(
             z=pivot.values,
@@ -211,11 +237,13 @@ def update_trends(years, countries, types):
             text=[[f"{v:,.0f}" for v in row] for row in pivot.values],
             texttemplate="%{text}",
         ))
-    fig_quarterly.update_layout(**themed_layout(True), xaxis_title="Quarter", yaxis_title="Year")
+        fig_quarterly.update_layout(**themed_layout(True), xaxis_title="Quarter", yaxis_title="Year")
 
     # ── Seasonal grouped bar ─────────────────────────────────────────────
     fig_seasonal = go.Figure()
-    if not seasonal.empty:
+    if seasonal.empty:
+        apply_empty_state_annotation(fig_seasonal)
+    else:
         season_order = ["Spring", "Summer", "Autumn", "Winter"]
         for season in season_order:
             sd = seasonal[seasonal["Season"] == season].sort_values("Year")
@@ -224,12 +252,14 @@ def update_trends(years, countries, types):
                     x=sd["Year"].astype(str), y=sd["Visitors"], name=season,
                     marker_color=SEASON_COLORS.get(season, "#6366F1"),
                 ))
-    fig_seasonal.update_layout(**themed_layout(True), barmode="group",
-                                xaxis_title="Year", yaxis_title="Visitors")
+        fig_seasonal.update_layout(**themed_layout(True), barmode="group",
+                                    xaxis_title="Year", yaxis_title="Visitors")
 
     # ── Tourist type stacked area ────────────────────────────────────────
     fig_type = go.Figure()
-    if not type_df.empty:
+    if type_df.empty:
+        apply_empty_state_annotation(fig_type)
+    else:
         type_monthly = type_df.groupby(["Year", "Tourist_Type"])["Visitors"].sum().reset_index()
         for ttype in type_monthly["Tourist_Type"].unique():
             td = type_monthly[type_monthly["Tourist_Type"] == ttype].sort_values("Year")
@@ -240,7 +270,7 @@ def update_trends(years, countries, types):
                 line=dict(color=TYPE_COLORS.get(ttype, "#6366F1")),
                 mode="lines",
             ))
-    fig_type.update_layout(**themed_layout(True), xaxis_title="Year", yaxis_title="Visitors")
+        fig_type.update_layout(**themed_layout(True), xaxis_title="Year", yaxis_title="Visitors")
 
     # Insights
     insights = html.Div([

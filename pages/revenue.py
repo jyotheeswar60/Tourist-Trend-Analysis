@@ -7,7 +7,7 @@ from services.data_service import (
     get_revenue_by_country, get_revenue_by_type, get_revenue_by_channel,
     get_revenue_by_accommodation, get_monthly_revenue, get_yearly_summary, get_filter_options,
 )
-from utils.chart_themes import themed_layout, PRIMARY_COLORS, TYPE_COLORS
+from utils.chart_themes import themed_layout, apply_empty_state_annotation, PRIMARY_COLORS, TYPE_COLORS
 from utils.chart_config import GRAPH_CONFIG
 import numpy as np
 
@@ -76,18 +76,27 @@ layout = html.Div(className="page-enter", children=[
     # Full width Monthly
     html.Div(className="chart-card", children=[
         html.Div(className="chart-card-header", children=[html.Span("Monthly Revenue", className="chart-card-title")]),
-        dcc.Graph(id="rev-monthly-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
+        dcc.Loading(
+            dcc.Graph(id="rev-monthly-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
+            type="circle", color="#6366F1"
+        ),
     ]),
 
     # Country + Type
     html.Div(className="chart-grid", children=[
         html.Div(className="chart-card", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Revenue by Country (Top 15)", className="chart-card-title")]),
-            dcc.Graph(id="rev-country-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
+            dcc.Loading(
+                dcc.Graph(id="rev-country-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
         html.Div(className="chart-card", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Revenue by Tourist Type", className="chart-card-title")]),
-            dcc.Graph(id="rev-type-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
+            dcc.Loading(
+                dcc.Graph(id="rev-type-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
     ]),
 
@@ -95,18 +104,27 @@ layout = html.Div(className="page-enter", children=[
     html.Div(className="chart-grid", children=[
         html.Div(className="chart-card", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Revenue by Booking Channel", className="chart-card-title")]),
-            dcc.Graph(id="rev-channel-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
+            dcc.Loading(
+                dcc.Graph(id="rev-channel-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
         html.Div(className="chart-card", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Revenue by Accommodation", className="chart-card-title")]),
-            dcc.Graph(id="rev-accom-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
+            dcc.Loading(
+                dcc.Graph(id="rev-accom-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
     ]),
 
     # Scatter
     html.Div(className="chart-card", children=[
         html.Div(className="chart-card-header", children=[html.Span("Visitors vs Revenue by Country", className="chart-card-title")]),
-        dcc.Graph(id="rev-scatter", config=GRAPH_CONFIG, style={"height": "400px"}),
+        dcc.Loading(
+            dcc.Graph(id="rev-scatter", config=GRAPH_CONFIG, style={"height": "400px"}),
+            type="circle", color="#6366F1"
+        ),
     ]),
 
     # Insights
@@ -163,48 +181,59 @@ def update_revenue(years, countries, types):
 
     # Monthly Area
     fig_monthly = go.Figure()
-    if not monthly_rev.empty:
+    if monthly_rev.empty:
+        apply_empty_state_annotation(fig_monthly)
+    else:
         grp = monthly_rev.groupby(["Year", "Month"])["Revenue"].sum().reset_index().sort_values(["Year", "Month"])
         grp["Period"] = range(len(grp))
-        grp["Label"] = grp.apply(lambda r: f"{MONTH_NAMES[r['Month']-1]} {r['Year']}", axis=1)
+        grp["Label"] = grp.apply(lambda r: f"{MONTH_NAMES[int(r['Month'])-1]} {int(r['Year'])}", axis=1)
         fig_monthly.add_trace(go.Scatter(
             x=grp["Label"], y=grp["Revenue"], name="Revenue",
             mode="lines", line=dict(color="#10B981", width=2),
             fill="tozeroy", fillcolor="rgba(16,185,129,0.15)",
         ))
-    fig_monthly.update_layout(**themed_layout(True), xaxis_title="Month", yaxis_title="Revenue ($)", xaxis=dict(tickangle=-45))
+        fig_monthly.update_layout(**themed_layout(True))
+        fig_monthly.update_layout(xaxis_title="Month", yaxis_title="Revenue ($)", xaxis=dict(tickangle=-45))
 
     # Country Bar
     fig_country = go.Figure()
-    if not country_rev.empty:
+    if country_rev.empty:
+        apply_empty_state_annotation(fig_country)
+    else:
         top_c = country_rev.sort_values("Revenue", ascending=True)
         fig_country.add_trace(go.Bar(
             y=top_c["Country"], x=top_c["Revenue"], orientation="h",
             marker=dict(color=top_c["Revenue"], colorscale="Greens")
         ))
-    fig_country.update_layout(**themed_layout(True))
+        fig_country.update_layout(**themed_layout(True))
 
     # Type Donut
     fig_type = go.Figure()
-    if not type_rev.empty:
+    if type_rev.empty:
+        apply_empty_state_annotation(fig_type)
+    else:
         fig_type.add_trace(go.Pie(
             labels=type_rev["Tourist_Type"], values=type_rev["Revenue"], hole=0.5,
             marker=dict(colors=[TYPE_COLORS.get(t, "#10B981") for t in type_rev["Tourist_Type"]])
         ))
-    fig_type.update_layout(**themed_layout(True))
+        fig_type.update_layout(**themed_layout(True))
 
     # Channel Bar
     fig_channel = go.Figure()
-    if not channel_rev.empty:
+    if channel_rev.empty:
+        apply_empty_state_annotation(fig_channel)
+    else:
         chan_srt = channel_rev.sort_values("Revenue", ascending=False)
         fig_channel.add_trace(go.Bar(
             x=chan_srt["Booking_Channel"], y=chan_srt["Revenue"], marker_color="#3B82F6"
         ))
-    fig_channel.update_layout(**themed_layout(True), xaxis_title="Booking Channel", yaxis_title="Revenue ($)")
+        fig_channel.update_layout(**themed_layout(True), xaxis_title="Booking Channel", yaxis_title="Revenue ($)")
 
     # Accom Bar + Line
     fig_accom = go.Figure()
-    if not accom_rev.empty:
+    if accom_rev.empty:
+        apply_empty_state_annotation(fig_accom)
+    else:
         acc_srt = accom_rev.sort_values("Revenue", ascending=False)
         fig_accom.add_trace(go.Bar(
             x=acc_srt["Accommodation_Type"], y=acc_srt["Revenue"], marker_color="#8B5CF6", name="Revenue"
@@ -217,13 +246,15 @@ def update_revenue(years, countries, types):
 
     # Scatter
     fig_scatter = go.Figure()
-    if not country_rev.empty:
+    if country_rev.empty:
+        apply_empty_state_annotation(fig_scatter)
+    else:
         fig_scatter.add_trace(go.Scatter(
             x=country_rev["Visitors"], y=country_rev["Revenue"], mode="markers",
             marker=dict(size=12, color=country_rev["Revenue"], colorscale="Viridis", showscale=True),
             text=country_rev["Country"], hoverinfo="text+x+y"
         ))
-    fig_scatter.update_layout(**themed_layout(True), xaxis_title="Visitors", yaxis_title="Revenue ($)")
+        fig_scatter.update_layout(**themed_layout(True), xaxis_title="Visitors", yaxis_title="Revenue ($)")
 
     insights = html.Div([
         html.Div(className="chart-card-header", children=[html.Span("💡 Revenue Insights", className="chart-card-title")]),

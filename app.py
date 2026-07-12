@@ -80,7 +80,6 @@ app.layout = html.Div(
         # ── Client-side State Stores ─────────────────────────────────────
         # dcc.Store persists data in the browser session without a round-trip.
         # Using storage_type="session" so state survives page refresh.
-        dcc.Store(id="theme-store",   data="dark",     storage_type="session"),
         dcc.Store(id="sidebar-store", data="expanded", storage_type="session"),
         dcc.Store(id="filter-store",  data={},         storage_type="memory"),
 
@@ -109,26 +108,7 @@ app.layout = html.Div(
 )
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# CALLBACK 1: THEME TOGGLE (server-side)
-# Toggles between dark-mode and light-mode class on #app-container.
-# Also updates the icon (sun ↔ moon) and persists choice in dcc.Store.
-# ─────────────────────────────────────────────────────────────────────────────
-@app.callback(
-    Output("app-container", "className"),
-    Output("theme-toggle-icon", "icon"),
-    Output("theme-store", "data"),
-    Input("theme-toggle-btn", "n_clicks"),
-    State("theme-store", "data"),
-    prevent_initial_call=True,
-)
-def toggle_theme(n_clicks: int, current_theme: str):
-    """Flip between dark and light mode."""
-    if current_theme == "dark":
-        log.debug("Theme → light")
-        return "light-mode", "lucide:moon", "light"
-    log.debug("Theme → dark")
-    return "dark-mode", "lucide:sun", "dark"
+
 
 
 # ─────────────────────────────────────────────────────────────────────────────

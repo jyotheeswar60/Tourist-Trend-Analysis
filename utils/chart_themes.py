@@ -40,20 +40,12 @@ DARK_GRID      = "rgba(255,255,255,0.06)"
 DARK_TEXT      = "#94A3B8"
 DARK_TITLE     = "#F1F5F9"
 
-# ── Light Template ─────────────────────────────────────────────────────────
-LIGHT_BG       = "#F8FAFC"
-LIGHT_PAPER    = "#FFFFFF"
-LIGHT_GRID     = "rgba(0,0,0,0.06)"
-LIGHT_TEXT     = "#64748B"
-LIGHT_TITLE    = "#0F172A"
-
-
-def _make_layout(is_dark: bool) -> dict:
-    bg     = DARK_BG     if is_dark else LIGHT_BG
-    paper  = DARK_PAPER  if is_dark else LIGHT_PAPER
-    grid   = DARK_GRID   if is_dark else LIGHT_GRID
-    text   = DARK_TEXT   if is_dark else LIGHT_TEXT
-    title  = DARK_TITLE  if is_dark else LIGHT_TITLE
+def _make_layout(is_dark: bool = True) -> dict:
+    bg     = DARK_BG
+    paper  = DARK_PAPER
+    grid   = DARK_GRID
+    text   = DARK_TEXT
+    title  = DARK_TITLE
 
     return dict(
         paper_bgcolor=paper,
@@ -73,7 +65,7 @@ def _make_layout(is_dark: bool) -> dict:
             zeroline=False,
         ),
         legend=dict(
-            bgcolor="rgba(0,0,0,0)" if is_dark else "rgba(255,255,255,0)",
+            bgcolor="rgba(0,0,0,0)",
             font=dict(color=text),
             borderwidth=0,
         ),
@@ -81,8 +73,8 @@ def _make_layout(is_dark: bool) -> dict:
         colorway=PRIMARY_COLORS,
         hovermode="x unified",
         hoverlabel=dict(
-            bgcolor="#1E293B" if is_dark else "#FFFFFF",
-            font_color="#F1F5F9" if is_dark else "#0F172A",
+            bgcolor="#1E293B",
+            font_color="#F1F5F9",
             bordercolor="#6366F1",
         ),
         modebar=dict(bgcolor="rgba(0,0,0,0)", color=text),
@@ -90,11 +82,22 @@ def _make_layout(is_dark: bool) -> dict:
 
 
 def apply_theme(fig: go.Figure, is_dark: bool = True) -> go.Figure:
-    """Apply dark or light theme to a Plotly figure."""
+    """Apply dark theme to a Plotly figure."""
     fig.update_layout(**_make_layout(is_dark))
     return fig
 
 
 def themed_layout(is_dark: bool = True) -> dict:
-    """Return layout dict for use in go.Figure(layout=...)."""
+    """Return dark layout dict for use in go.Figure(layout=...)."""
     return _make_layout(is_dark)
+
+
+def apply_empty_state_annotation(fig: go.Figure) -> go.Figure:
+    """Add a centered 'No data available' message to an empty chart."""
+    fig.update_layout(**_make_layout(True))
+    fig.add_annotation(
+        text="No data available for the selected filters",
+        showarrow=False,
+        font=dict(size=14, color="#94A3B8")
+    )
+    return fig

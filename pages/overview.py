@@ -8,7 +8,7 @@ from services.data_service import (
     get_kpi_summary, get_monthly_visitors, get_yearly_summary,
     get_country_stats, get_seasonal_trends, get_type_trends, get_filter_options,
 )
-from utils.chart_themes import themed_layout, PRIMARY_COLORS, SEASON_COLORS, TYPE_COLORS
+from utils.chart_themes import themed_layout, apply_empty_state_annotation, PRIMARY_COLORS, SEASON_COLORS, TYPE_COLORS
 from utils.chart_config import GRAPH_CONFIG
 
 dash.register_page(__name__, path="/", name="Executive Overview",
@@ -86,13 +86,19 @@ layout = html.Div(className="page-enter", children=[
             html.Div(className="chart-card-header", children=[
                 html.Span("Monthly Visitor Arrivals", className="chart-card-title"),
             ]),
-            dcc.Graph(id="overview-monthly-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
+            dcc.Loading(
+                dcc.Graph(id="overview-monthly-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
         html.Div(className="chart-card", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[
                 html.Span("Yearly Performance", className="chart-card-title"),
             ]),
-            dcc.Graph(id="overview-yearly-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
+            dcc.Loading(
+                dcc.Graph(id="overview-yearly-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
     ]),
 
@@ -102,19 +108,28 @@ layout = html.Div(className="page-enter", children=[
             html.Div(className="chart-card-header", children=[
                 html.Span("Top Countries by Visitors", className="chart-card-title"),
             ]),
-            dcc.Graph(id="overview-country-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
+            dcc.Loading(
+                dcc.Graph(id="overview-country-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
         html.Div(className="chart-card", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[
                 html.Span("Tourist Type Mix", className="chart-card-title"),
             ]),
-            dcc.Graph(id="overview-type-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
+            dcc.Loading(
+                dcc.Graph(id="overview-type-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
         html.Div(className="chart-card", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[
                 html.Span("Seasonal Distribution", className="chart-card-title"),
             ]),
-            dcc.Graph(id="overview-season-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
+            dcc.Loading(
+                dcc.Graph(id="overview-season-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
     ]),
 
@@ -186,80 +201,96 @@ def update_overview(years, countries, types):
     # ── Monthly Chart ────────────────────────────────────────────────────
     monthly = get_monthly_visitors(filters)
     fig_monthly = go.Figure()
-    years_in = sorted(monthly["Year"].unique()) if not monthly.empty else []
-    colors = PRIMARY_COLORS
-    for i, yr in enumerate(years_in):
-        yd = monthly[monthly["Year"] == yr].sort_values("Month")
-        fig_monthly.add_trace(go.Scatter(
-            x=[MONTH_NAMES[m-1] for m in yd["Month"]],
-            y=yd["Visitors"],
-            name=str(yr),
-            mode="lines+markers",
-            line=dict(color=colors[i % len(colors)], width=2),
-            fill="tozeroy" if len(years_in) == 1 else "none",
-            fillcolor=f"rgba(99,102,241,0.08)",
-        ))
-    fig_monthly.update_layout(**themed_layout(True), title="Monthly Visitor Arrivals",
-                               xaxis_title="Month", yaxis_title="Visitors")
+    if monthly.empty:
+        apply_empty_state_annotation(fig_monthly)
+    else:
+        years_in = sorted(monthly["Year"].unique()) if not monthly.empty else []
+        colors = PRIMARY_COLORS
+        for i, yr in enumerate(years_in):
+            yd = monthly[monthly["Year"] == yr].sort_values("Month")
+            fig_monthly.add_trace(go.Scatter(
+                x=[MONTH_NAMES[m-1] for m in yd["Month"]],
+                y=yd["Visitors"],
+                name=str(yr),
+                mode="lines+markers",
+                line=dict(color=colors[i % len(colors)], width=2),
+                fill="tozeroy" if len(years_in) == 1 else "none",
+                fillcolor=f"rgba(99,102,241,0.08)",
+            ))
+        fig_monthly.update_layout(**themed_layout(True), title="Monthly Visitor Arrivals",
+                                   xaxis_title="Month", yaxis_title="Visitors")
 
     # ── Yearly Chart ─────────────────────────────────────────────────────
     yearly = get_yearly_summary(filters)
     fig_yearly = go.Figure()
-    if not yearly.empty:
-        fig_yearly.add_trace(go.Bar(
-            x=yearly["Year"].astype(str), y=yearly["Visitors"],
-            name="Visitors", marker_color="#6366F1", yaxis="y"
-        ))
-        fig_yearly.add_trace(go.Scatter(
-            x=yearly["Year"].astype(str), y=yearly["Revenue"],
-            name="Revenue (USD)", line=dict(color="#10B981", width=2),
-            mode="lines+markers", yaxis="y2"
-        ))
-        fig_yearly.update_layout(
-            **themed_layout(True),
-            title="Yearly Visitors & Revenue",
-            yaxis=dict(title="Visitors"),
-            yaxis2=dict(title="Revenue (USD)", overlaying="y", side="right"),
-            barmode="group",
-        )
+    if yearly.empty:
+        apply_empty_state_annotation(fig_yearly)
+    else:
+        if not yearly.empty:
+            fig_yearly.add_trace(go.Bar(
+                x=yearly["Year"].astype(str), y=yearly["Visitors"],
+                name="Visitors", marker_color="#6366F1", yaxis="y"
+            ))
+            fig_yearly.add_trace(go.Scatter(
+                x=yearly["Year"].astype(str), y=yearly["Revenue"],
+                name="Revenue (USD)", line=dict(color="#10B981", width=2),
+                mode="lines+markers", yaxis="y2"
+            ))
+            fig_yearly.update_layout(**themed_layout(True))
+            fig_yearly.update_layout(
+                title="Yearly Visitors & Revenue",
+                yaxis=dict(title="Visitors"),
+                yaxis2=dict(title="Revenue (USD)", overlaying="y", side="right"),
+                barmode="group",
+            )
 
     # ── Country Chart ────────────────────────────────────────────────────
     country = get_country_stats(filters).head(10)
     fig_country = go.Figure()
-    if not country.empty:
-        fig_country.add_trace(go.Bar(
-            x=country["Visitors"], y=country["Country"],
-            orientation="h",
-            marker=dict(color=country["Visitors"], colorscale="Viridis"),
-            text=[f"{v/1e3:.0f}K" for v in country["Visitors"]],
-            textposition="outside",
-        ))
-    fig_country.update_layout(**themed_layout(True), title="Top 10 Countries",
-                               xaxis_title="Total Visitors", yaxis=dict(autorange="reversed"))
+    if country.empty:
+        apply_empty_state_annotation(fig_country)
+    else:
+        if not country.empty:
+            fig_country.add_trace(go.Bar(
+                x=country["Visitors"], y=country["Country"],
+                orientation="h",
+                marker=dict(color=country["Visitors"], colorscale="Viridis"),
+                text=[f"{v/1e3:.0f}K" for v in country["Visitors"]],
+                textposition="outside",
+            ))
+        fig_country.update_layout(**themed_layout(True))
+        fig_country.update_layout(title="Top 10 Countries",
+                                   xaxis_title="Total Visitors", yaxis=dict(autorange="reversed"))
 
     # ── Type Donut ───────────────────────────────────────────────────────
     type_df = get_type_trends(filters)
     type_agg = type_df.groupby("Tourist_Type")["Visitors"].sum().reset_index() if not type_df.empty else type_df
     fig_type = go.Figure()
-    if not type_agg.empty:
-        fig_type.add_trace(go.Pie(
-            labels=type_agg["Tourist_Type"], values=type_agg["Visitors"],
-            hole=0.5,
-            marker=dict(colors=[TYPE_COLORS.get(t, "#6366F1") for t in type_agg["Tourist_Type"]]),
-        ))
-    fig_type.update_layout(**themed_layout(True), title="Tourist Types", showlegend=True)
+    if type_agg.empty:
+        apply_empty_state_annotation(fig_type)
+    else:
+        if not type_agg.empty:
+            fig_type.add_trace(go.Pie(
+                labels=type_agg["Tourist_Type"], values=type_agg["Visitors"],
+                hole=0.5,
+                marker=dict(colors=[TYPE_COLORS.get(t, "#6366F1") for t in type_agg["Tourist_Type"]]),
+            ))
+        fig_type.update_layout(**themed_layout(True), title="Tourist Types", showlegend=True)
 
     # ── Season Chart ─────────────────────────────────────────────────────
     season_df = get_seasonal_trends(filters)
     season_agg = season_df.groupby("Season")["Visitors"].sum().reset_index() if not season_df.empty else season_df
     fig_season = go.Figure()
-    if not season_agg.empty:
-        fig_season.add_trace(go.Pie(
-            labels=season_agg["Season"], values=season_agg["Visitors"],
-            hole=0.5,
-            marker=dict(colors=[SEASON_COLORS.get(s, "#6366F1") for s in season_agg["Season"]]),
-        ))
-    fig_season.update_layout(**themed_layout(True), title="By Season")
+    if season_agg.empty:
+        apply_empty_state_annotation(fig_season)
+    else:
+        if not season_agg.empty:
+            fig_season.add_trace(go.Pie(
+                labels=season_agg["Season"], values=season_agg["Visitors"],
+                hole=0.5,
+                marker=dict(colors=[SEASON_COLORS.get(s, "#6366F1") for s in season_agg["Season"]]),
+            ))
+        fig_season.update_layout(**themed_layout(True), title="By Season")
 
     # ── Insights ─────────────────────────────────────────────────────────
     best_season = season_agg.loc[season_agg["Visitors"].idxmax(), "Season"] if not season_agg.empty else "N/A"

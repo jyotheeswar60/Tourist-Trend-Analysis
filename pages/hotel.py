@@ -8,7 +8,7 @@ from services.data_service import (
     get_occupancy_by_country, get_occupancy_trend, get_occupancy_by_season,
     get_accommodation_performance, get_by_accommodation, get_filter_options
 )
-from utils.chart_themes import themed_layout, PRIMARY_COLORS
+from utils.chart_themes import themed_layout, apply_empty_state_annotation, PRIMARY_COLORS
 from utils.chart_config import GRAPH_CONFIG
 
 dash.register_page(__name__, path="/hotel", name="Hotel Analytics",
@@ -78,29 +78,44 @@ layout = html.Div(className="page-enter", children=[
     html.Div(className="chart-grid", children=[
         html.Div(className="chart-card", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Occupancy by Country (Top 15)", className="chart-card-title")]),
-            dcc.Graph(id="hotel-country-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
+            dcc.Loading(
+                dcc.Graph(id="hotel-country-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
         html.Div(className="chart-card", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Occupancy by Season & Accommodation", className="chart-card-title")]),
-            dcc.Graph(id="hotel-season-heat", config=GRAPH_CONFIG, style={"height": "400px"}),
+            dcc.Loading(
+                dcc.Graph(id="hotel-season-heat", config=GRAPH_CONFIG, style={"height": "400px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
     ]),
 
     # Accom Perf
     html.Div(className="chart-card", children=[
         html.Div(className="chart-card-header", children=[html.Span("Accommodation Performance", className="chart-card-title")]),
-        dcc.Graph(id="hotel-accom-chart", config=GRAPH_CONFIG, style={"height": "380px"}),
+        dcc.Loading(
+            dcc.Graph(id="hotel-accom-chart", config=GRAPH_CONFIG, style={"height": "380px"}),
+            type="circle", color="#6366F1"
+        ),
     ]),
 
     # Scatter + Donut
     html.Div(className="chart-grid", children=[
         html.Div(className="chart-card", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Occupancy vs Revenue (by Country)", className="chart-card-title")]),
-            dcc.Graph(id="hotel-scatter", config=GRAPH_CONFIG, style={"height": "380px"}),
+            dcc.Loading(
+                dcc.Graph(id="hotel-scatter", config=GRAPH_CONFIG, style={"height": "380px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
         html.Div(className="chart-card", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Accommodation Revenue Share", className="chart-card-title")]),
-            dcc.Graph(id="hotel-accom-rev", config=GRAPH_CONFIG, style={"height": "380px"}),
+            dcc.Loading(
+                dcc.Graph(id="hotel-accom-rev", config=GRAPH_CONFIG, style={"height": "380px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
     ]),
 
@@ -149,38 +164,47 @@ def update_hotel(years, countries, seasons):
 
     # Trend
     fig_trend = go.Figure()
-    if not occ_trend.empty:
+    if occ_trend.empty:
+        apply_empty_state_annotation(fig_trend)
+    else:
         grp = occ_trend.copy()
         grp["Label"] = grp.apply(lambda r: f"{MONTH_NAMES[int(r['Month'])-1]} {int(r['Year'])}", axis=1)
         fig_trend.add_trace(go.Scatter(
             x=grp["Label"], y=grp["AvgOccupancy"], mode="lines+markers",
             line=dict(color="#F59E0B", width=2), fill="tozeroy", fillcolor="rgba(245,158,11,0.15)"
         ))
-    fig_trend.update_layout(**themed_layout(True), xaxis_title="Month", yaxis_title="Occupancy %", xaxis=dict(tickangle=-45))
+        fig_trend.update_layout(**themed_layout(True))
+        fig_trend.update_layout(xaxis_title="Month", yaxis_title="Occupancy %", xaxis=dict(tickangle=-45))
 
     # Country
     fig_country = go.Figure()
-    if not occ_country.empty:
+    if occ_country.empty:
+        apply_empty_state_annotation(fig_country)
+    else:
         top15 = occ_country.head(15).sort_values("AvgOccupancy", ascending=True)
         fig_country.add_trace(go.Bar(
             y=top15["Country"], x=top15["AvgOccupancy"], orientation="h",
             marker=dict(color=top15["AvgOccupancy"], colorscale="Oranges")
         ))
-    fig_country.update_layout(**themed_layout(True))
+        fig_country.update_layout(**themed_layout(True))
 
     # Heatmap
     fig_heat = go.Figure()
-    if not occ_season.empty:
+    if occ_season.empty:
+        apply_empty_state_annotation(fig_heat)
+    else:
         pivot = occ_season.pivot(index="Accommodation_Type", columns="Season", values="AvgOccupancy").fillna(0)
         fig_heat.add_trace(go.Heatmap(
             z=pivot.values, x=pivot.columns, y=pivot.index, colorscale="Oranges",
             text=pivot.values.round(1), texttemplate="%{text}%"
         ))
-    fig_heat.update_layout(**themed_layout(True))
+        fig_heat.update_layout(**themed_layout(True))
 
     # Accom Perf
     fig_perf = go.Figure()
-    if not accom_perf.empty:
+    if accom_perf.empty:
+        apply_empty_state_annotation(fig_perf)
+    else:
         fig_perf.add_trace(go.Bar(
             x=accom_perf["Accommodation_Type"], y=accom_perf["AvgOccupancy"],
             name="Occupancy %", marker_color="#8B5CF6"
@@ -189,26 +213,30 @@ def update_hotel(years, countries, seasons):
             x=accom_perf["Accommodation_Type"], y=accom_perf["AvgRating"]*20, # Scale rating 1-5 to 20-100 for visual
             name="Rating (scaled)", line=dict(color="#10B981", width=2), mode="lines+markers"
         ))
-    fig_perf.update_layout(**themed_layout(True), barmode="group")
+        fig_perf.update_layout(**themed_layout(True), barmode="group")
 
     # Scatter
     fig_scat = go.Figure()
-    if not occ_country.empty:
+    if occ_country.empty:
+        apply_empty_state_annotation(fig_scat)
+    else:
         fig_scat.add_trace(go.Scatter(
             x=occ_country["AvgOccupancy"], y=occ_country["Revenue"], mode="markers",
             marker=dict(size=occ_country["Visitors"]/occ_country["Visitors"].max()*50, color="#06B6D4", opacity=0.7),
             text=occ_country["Country"], hoverinfo="text+x+y"
         ))
-    fig_scat.update_layout(**themed_layout(True), xaxis_title="Occupancy %", yaxis_title="Revenue ($)")
+        fig_scat.update_layout(**themed_layout(True), xaxis_title="Occupancy %", yaxis_title="Revenue ($)")
 
     # Donut
     fig_donut = go.Figure()
-    if not by_accom.empty:
+    if by_accom.empty:
+        apply_empty_state_annotation(fig_donut)
+    else:
         fig_donut.add_trace(go.Pie(
             labels=by_accom["Accommodation_Type"], values=by_accom["Revenue"], hole=0.5,
             marker=dict(colors=PRIMARY_COLORS)
         ))
-    fig_donut.update_layout(**themed_layout(True))
+        fig_donut.update_layout(**themed_layout(True))
 
     insights = html.Div([
         html.Div(className="chart-card-header", children=[html.Span("💡 Hotel Insights", className="chart-card-title")]),
