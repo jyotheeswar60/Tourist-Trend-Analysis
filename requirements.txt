@@ -39,3 +39,6 @@ python-dotenv>=1.0.0
 # gunicorn is Linux-only (Render runs Linux). Do NOT install on Windows.
 # It is listed here for Render's build step.
 gunicorn>=20.0.0
+
+# ── Advanced Analytics / Clustering ──────────────────────
+scikit-learn
