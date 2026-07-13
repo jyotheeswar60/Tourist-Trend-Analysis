@@ -18,6 +18,9 @@ _opts = get_filter_options()
 YEAR_OPTS    = [{"label": str(y), "value": y} for y in _opts["years"]]
 COUNTRY_OPTS = [{"label": c, "value": c} for c in _opts["countries"]]
 TYPE_OPTS    = [{"label": t, "value": t} for t in _opts["tourist_types"]]
+SEASON_OPTS  = [{"label": s, "value": s} for s in _opts["seasons"]]
+ACCOM_OPTS   = [{"label": a, "value": a} for a in _opts["accommodation"]]
+PURP_OPTS    = [{"label": p, "value": p} for p in _opts["purposes"]]
 
 MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 
@@ -57,23 +60,31 @@ layout = html.Div(className="page-enter", children=[
         html.Div(className="filter-row", children=[
             html.Div(className="filter-group", children=[
                 html.Label("Year", className="filter-label"),
-                dcc.Dropdown(id="overview-year-filter", options=YEAR_OPTS, multi=True,
-                             placeholder="All Years", className="filter-dropdown"),
+                dcc.Dropdown(id="overview-year-filter", options=YEAR_OPTS, multi=True, placeholder="All Years", className="filter-dropdown"),
             ]),
             html.Div(className="filter-group", children=[
                 html.Label("Country", className="filter-label"),
-                dcc.Dropdown(id="overview-country-filter", options=COUNTRY_OPTS, multi=True,
-                             placeholder="All Countries", className="filter-dropdown"),
+                dcc.Dropdown(id="overview-country-filter", options=COUNTRY_OPTS, multi=True, placeholder="All Countries", className="filter-dropdown"),
             ]),
             html.Div(className="filter-group", children=[
                 html.Label("Tourist Type", className="filter-label"),
-                dcc.Dropdown(id="overview-type-filter", options=TYPE_OPTS, multi=True,
-                             placeholder="All Types", className="filter-dropdown"),
+                dcc.Dropdown(id="overview-type-filter", options=TYPE_OPTS, multi=True, placeholder="All Types", className="filter-dropdown"),
             ]),
-            html.Div(className="filter-group", style={"alignSelf": "flex-end"}, children=[
-                html.Button("↺ Reset", id="overview-reset-btn", n_clicks=0,
-                            className="btn btn-secondary btn-sm"),
+            html.Div(className="filter-group", children=[
+                html.Label("Season", className="filter-label"),
+                dcc.Dropdown(id="overview-season-filter", options=SEASON_OPTS, multi=True, placeholder="All Seasons", className="filter-dropdown"),
             ]),
+            html.Div(className="filter-group", children=[
+                html.Label("Accommodation", className="filter-label"),
+                dcc.Dropdown(id="overview-accom-filter", options=ACCOM_OPTS, multi=True, placeholder="All", className="filter-dropdown"),
+            ]),
+            html.Div(className="filter-group", children=[
+                html.Label("Purpose", className="filter-label"),
+                dcc.Dropdown(id="overview-purp-filter", options=PURP_OPTS, multi=True, placeholder="All", className="filter-dropdown"),
+            ]),
+        ]),
+        html.Div(className="filter-row", style={"marginTop": "10px", "justifyContent": "flex-end"}, children=[
+            html.Button("↺ Reset", id="overview-reset-btn", n_clicks=0, className="btn btn-secondary btn-sm"),
         ]),
     ]),
 
@@ -81,62 +92,45 @@ layout = html.Div(className="page-enter", children=[
     html.Div(className="kpi-grid animate-on-scroll fade-up stagger-1", children=[
         make_kpi_card("Total Visitors",   "overview-kpi-visitors",  "lucide:users"),
         make_kpi_card("Total Revenue",    "overview-kpi-revenue",   "lucide:dollar-sign"),
-        make_kpi_card("Avg Stay (Days)",  "overview-kpi-stay",      "lucide:calendar-days"),
-        make_kpi_card("Avg Rating",       "overview-kpi-rating",    "lucide:star"),
+        make_kpi_card("Average Stay",     "overview-kpi-stay",      "lucide:calendar-days"),
+        make_kpi_card("Average Rating",   "overview-kpi-rating",    "lucide:star"),
         make_kpi_card("Hotel Occupancy",  "overview-kpi-occupancy", "lucide:hotel"),
         make_kpi_card("Repeat Visitors",  "overview-kpi-repeat",    "lucide:repeat"),
     ]),
 
-    # Row 1: Monthly + Yearly
+    # Charts Grid
     html.Div(className="chart-grid animate-on-scroll fade-up stagger-2", children=[
-        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
-            html.Div(className="chart-card-header", children=[
-                html.Span("Monthly Visitor Arrivals", className="chart-card-title"),
-            ]),
-            dcc.Loading(
-                dcc.Graph(id="overview-monthly-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
-                type="circle", color="#6366F1"
-            ),
+        html.Div(className="chart-card", children=[
+            html.Div(className="chart-card-header", children=[html.Span("1. Monthly Visitors Trend", className="chart-card-title")]),
+            dcc.Loading(dcc.Graph(id="chart-1-monthly-trend", config=GRAPH_CONFIG, style={"height": "320px"}), type="circle", color="#6366F1")
         ]),
-        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
-            html.Div(className="chart-card-header", children=[
-                html.Span("Yearly Performance", className="chart-card-title"),
-            ]),
-            dcc.Loading(
-                dcc.Graph(id="overview-yearly-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
-                type="circle", color="#6366F1"
-            ),
+        html.Div(className="chart-card", children=[
+            html.Div(className="chart-card-header", children=[html.Span("2. Revenue by Country", className="chart-card-title")]),
+            dcc.Loading(dcc.Graph(id="chart-2-revenue-country", config=GRAPH_CONFIG, style={"height": "320px"}), type="circle", color="#6366F1")
         ]),
-    ]),
-
-    # Row 2: Country + Type + Season
-    html.Div(className="chart-grid animate-on-scroll fade-up stagger-2", children=[
-        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1.4"}, children=[
-            html.Div(className="chart-card-header", children=[
-                html.Span("Top Countries by Visitors", className="chart-card-title"),
-            ]),
-            dcc.Loading(
-                dcc.Graph(id="overview-country-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
-                type="circle", color="#6366F1"
-            ),
+        html.Div(className="chart-card", children=[
+            html.Div(className="chart-card-header", children=[html.Span("3. Seasonal Tourism", className="chart-card-title")]),
+            dcc.Loading(dcc.Graph(id="chart-3-seasonal-area", config=GRAPH_CONFIG, style={"height": "320px"}), type="circle", color="#6366F1")
         ]),
-        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
-            html.Div(className="chart-card-header", children=[
-                html.Span("Tourist Type Mix", className="chart-card-title"),
-            ]),
-            dcc.Loading(
-                dcc.Graph(id="overview-type-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
-                type="circle", color="#6366F1"
-            ),
+        html.Div(className="chart-card", children=[
+            html.Div(className="chart-card-header", children=[html.Span("4. Visitor Type Distribution", className="chart-card-title")]),
+            dcc.Loading(dcc.Graph(id="chart-4-visitor-type", config=GRAPH_CONFIG, style={"height": "320px"}), type="circle", color="#6366F1")
         ]),
-        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
-            html.Div(className="chart-card-header", children=[
-                html.Span("Seasonal Distribution", className="chart-card-title"),
-            ]),
-            dcc.Loading(
-                dcc.Graph(id="overview-season-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
-                type="circle", color="#6366F1"
-            ),
+        html.Div(className="chart-card", children=[
+            html.Div(className="chart-card-header", children=[html.Span("5. Top Destinations", className="chart-card-title")]),
+            dcc.Loading(dcc.Graph(id="chart-5-top-destinations", config=GRAPH_CONFIG, style={"height": "320px"}), type="circle", color="#6366F1")
+        ]),
+        html.Div(className="chart-card", children=[
+            html.Div(className="chart-card-header", children=[html.Span("6. Revenue vs Visitors", className="chart-card-title")]),
+            dcc.Loading(dcc.Graph(id="chart-6-revenue-visitors", config=GRAPH_CONFIG, style={"height": "320px"}), type="circle", color="#6366F1")
+        ]),
+        html.Div(className="chart-card", children=[
+            html.Div(className="chart-card-header", children=[html.Span("7. Country Heatmap", className="chart-card-title")]),
+            dcc.Loading(dcc.Graph(id="chart-7-country-heatmap", config=GRAPH_CONFIG, style={"height": "320px"}), type="circle", color="#6366F1")
+        ]),
+        html.Div(className="chart-card", children=[
+            html.Div(className="chart-card-header", children=[html.Span("8. Monthly Growth", className="chart-card-title")]),
+            dcc.Loading(dcc.Graph(id="chart-8-monthly-growth", config=GRAPH_CONFIG, style={"height": "320px"}), type="circle", color="#6366F1")
         ]),
     ]),
 
@@ -145,11 +139,14 @@ layout = html.Div(className="page-enter", children=[
 ])
 
 
-def _build_filters(years, countries, types):
+def _build_filters(years, countries, types, seasons, accoms, purps):
     f = {}
     if years:    f["years"] = years
     if countries: f["countries"] = countries
     if types:    f["tourist_types"] = types
+    if seasons:  f["seasons"] = seasons
+    if accoms:   f["accommodation"] = accoms
+    if purps:    f["purposes"] = purps
     return f or None
 
 
@@ -166,22 +163,28 @@ def _build_filters(years, countries, types):
      Output("overview-kpi-occupancy-trend", "children"),
      Output("overview-kpi-repeat", "children"),
      Output("overview-kpi-repeat-trend", "children"),
-     Output("overview-monthly-chart", "figure"),
-     Output("overview-yearly-chart", "figure"),
-     Output("overview-country-chart", "figure"),
-     Output("overview-type-chart", "figure"),
-     Output("overview-season-chart", "figure"),
+     
+     Output("chart-1-monthly-trend", "figure"),
+     Output("chart-2-revenue-country", "figure"),
+     Output("chart-3-seasonal-area", "figure"),
+     Output("chart-4-visitor-type", "figure"),
+     Output("chart-5-top-destinations", "figure"),
+     Output("chart-6-revenue-visitors", "figure"),
+     Output("chart-7-country-heatmap", "figure"),
+     Output("chart-8-monthly-growth", "figure"),
      Output("overview-insights", "children")],
     [Input("overview-year-filter", "value"),
      Input("overview-country-filter", "value"),
-     Input("overview-type-filter", "value")],
+     Input("overview-type-filter", "value"),
+     Input("overview-season-filter", "value"),
+     Input("overview-accom-filter", "value"),
+     Input("overview-purp-filter", "value")],
     prevent_initial_call=False,
 )
-def update_overview(years, countries, types):
-    filters = _build_filters(years, countries, types)
+def update_overview(years, countries, types, seasons, accoms, purps):
+    filters = _build_filters(years, countries, types, seasons, accoms, purps)
     kpi = get_kpi_summary(filters)
 
-    # KPI values
     total_v   = kpi.get("total_visitors", 0)
     total_r   = kpi.get("total_revenue", 0)
     avg_stay  = kpi.get("avg_stay", 0)
@@ -190,147 +193,126 @@ def update_overview(years, countries, types):
     rep_pct   = kpi.get("repeat_pct", 0)
     yoy       = kpi.get("yoy_growth", 0)
     top_c     = kpi.get("top_country", "N/A")
-    top_city  = kpi.get("top_city", "N/A")
 
     trend_icon = "▲" if yoy >= 0 else "▼"
     trend_cls  = "kpi-trend-up" if yoy >= 0 else "kpi-trend-down"
-    trend_txt  = f"{trend_icon} {abs(yoy):.1f}% YoY"
+    trend_txt_r  = html.Span(f"{trend_icon} {abs(yoy):.1f}% YoY", className=trend_cls)
 
     kv_visitors  = f"{total_v/1e6:.2f}M" if total_v >= 1e6 else f"{total_v:,.0f}"
     kv_revenue   = f"${total_r/1e9:.2f}B" if total_r >= 1e9 else f"${total_r/1e6:.1f}M"
-    kv_stay      = f"{avg_stay:.1f} days"
-    kv_rating    = f"{avg_rat:.2f} / 5.0"
-    kv_occupancy = f"{avg_occ:.1f}%"
-    kv_repeat    = f"{rep_pct:.1f}%"
-
-    trend_txt_r = html.Span(trend_txt, className=trend_cls)
-
-    # ── Monthly Chart ────────────────────────────────────────────────────
+    
     monthly = get_monthly_visitors(filters)
-    fig_monthly = go.Figure()
-    if monthly.empty:
-        apply_empty_state_annotation(fig_monthly)
-    else:
-        years_in = sorted(monthly["Year"].unique()) if not monthly.empty else []
-        colors = PRIMARY_COLORS
-        for i, yr in enumerate(years_in):
-            yd = monthly[monthly["Year"] == yr].sort_values("Month")
-            fig_monthly.add_trace(go.Scatter(
-                x=[MONTH_NAMES[m-1] for m in yd["Month"]],
-                y=yd["Visitors"],
-                name=str(yr),
-                mode="lines+markers",
-                line=dict(color=colors[i % len(colors)], width=2),
-                fill="tozeroy" if len(years_in) == 1 else "none",
-                fillcolor=f"rgba(99,102,241,0.08)",
-            ))
-        fig_monthly.update_layout(**themed_layout(True), title="Monthly Visitor Arrivals",
-                                   xaxis_title="Month", yaxis_title="Visitors")
-
-    # ── Yearly Chart ─────────────────────────────────────────────────────
-    yearly = get_yearly_summary(filters)
-    fig_yearly = go.Figure()
-    if yearly.empty:
-        apply_empty_state_annotation(fig_yearly)
-    else:
-        if not yearly.empty:
-            fig_yearly.add_trace(go.Bar(
-                x=yearly["Year"].astype(str), y=yearly["Visitors"],
-                name="Visitors", marker_color="#6366F1", yaxis="y"
-            ))
-            fig_yearly.add_trace(go.Scatter(
-                x=yearly["Year"].astype(str), y=yearly["Revenue"],
-                name="Revenue (USD)", line=dict(color="#10B981", width=2),
-                mode="lines+markers", yaxis="y2"
-            ))
-            fig_yearly.update_layout(**themed_layout(True))
-            fig_yearly.update_layout(
-                title="Yearly Visitors & Revenue",
-                yaxis=dict(title="Visitors"),
-                yaxis2=dict(title="Revenue (USD)", overlaying="y", side="right"),
-                barmode="group",
-            )
-
-    # ── Country Chart ────────────────────────────────────────────────────
-    country = get_country_stats(filters).head(10)
-    fig_country = go.Figure()
-    if country.empty:
-        apply_empty_state_annotation(fig_country)
-    else:
-        if not country.empty:
-            fig_country.add_trace(go.Bar(
-                x=country["Visitors"], y=country["Country"],
-                orientation="h",
-                marker=dict(color=country["Visitors"], colorscale="Viridis"),
-                text=[f"{v/1e3:.0f}K" for v in country["Visitors"]],
-                textposition="outside",
-            ))
-        fig_country.update_layout(**themed_layout(True))
-        fig_country.update_layout(title="Top 10 Countries",
-                                   xaxis_title="Total Visitors", yaxis=dict(autorange="reversed"))
-
-    # ── Type Donut ───────────────────────────────────────────────────────
-    type_df = get_type_trends(filters)
-    type_agg = type_df.groupby("Tourist_Type")["Visitors"].sum().reset_index() if not type_df.empty else type_df
-    fig_type = go.Figure()
-    if type_agg.empty:
-        apply_empty_state_annotation(fig_type)
-    else:
-        if not type_agg.empty:
-            fig_type.add_trace(go.Pie(
-                labels=type_agg["Tourist_Type"], values=type_agg["Visitors"],
-                hole=0.5,
-                marker=dict(colors=[TYPE_COLORS.get(t, "#6366F1") for t in type_agg["Tourist_Type"]]),
-            ))
-        fig_type.update_layout(**themed_layout(True), title="Tourist Types", showlegend=True)
-
-    # ── Season Chart ─────────────────────────────────────────────────────
+    country_df = get_country_stats(filters)
     season_df = get_seasonal_trends(filters)
-    season_agg = season_df.groupby("Season")["Visitors"].sum().reset_index() if not season_df.empty else season_df
-    fig_season = go.Figure()
-    if season_agg.empty:
-        apply_empty_state_annotation(fig_season)
-    else:
-        if not season_agg.empty:
-            fig_season.add_trace(go.Pie(
-                labels=season_agg["Season"], values=season_agg["Visitors"],
-                hole=0.5,
-                marker=dict(colors=[SEASON_COLORS.get(s, "#6366F1") for s in season_agg["Season"]]),
-            ))
-        fig_season.update_layout(**themed_layout(True), title="By Season")
+    type_df = get_type_trends(filters)
+    
+    fig1 = go.Figure()
+    fig2 = go.Figure()
+    fig3 = go.Figure()
+    fig4 = go.Figure()
+    fig5 = go.Figure()
+    fig6 = go.Figure()
+    fig7 = go.Figure()
+    fig8 = go.Figure()
 
-    # ── Insights ─────────────────────────────────────────────────────────
-    best_season = season_agg.loc[season_agg["Visitors"].idxmax(), "Season"] if not season_agg.empty else "N/A"
-    top_type    = type_agg.loc[type_agg["Visitors"].idxmax(), "Tourist_Type"] if not type_agg.empty else "N/A"
+    if not monthly.empty:
+        # 1. Monthly Visitors Trend (Animated Line Chart)
+        for yr in sorted(monthly["Year"].unique()):
+            yd = monthly[monthly["Year"] == yr].sort_values("Month")
+            fig1.add_trace(go.Scatter(
+                x=[MONTH_NAMES[m-1] for m in yd["Month"]], y=yd["Visitors"],
+                name=str(yr), mode="lines+markers", line=dict(width=3)
+            ))
+        fig1.update_layout(**themed_layout(True), xaxis_title="Month", yaxis_title="Visitors")
+        
+        # 8. Monthly Growth (Waterfall Chart)
+        last_yr = sorted(monthly["Year"].unique())[-1]
+        ly_data = monthly[monthly["Year"] == last_yr].sort_values("Month")
+        if not ly_data.empty:
+            diffs = ly_data["Visitors"].diff().fillna(ly_data["Visitors"].iloc[0])
+            fig8.add_trace(go.Waterfall(
+                x=[MONTH_NAMES[m-1] for m in ly_data["Month"]],
+                y=diffs,
+                measure=["relative"] * len(diffs),
+                text=[f"{d/1000:.1f}K" for d in diffs],
+                textposition="outside",
+                increasing=dict(marker=dict(color="#10B981")),
+                decreasing=dict(marker=dict(color="#EF4444")),
+                totals=dict(marker=dict(color="#3B82F6"))
+            ))
+            fig8.update_layout(**themed_layout(True), title=f"Monthly Growth ({last_yr})", showlegend=False)
+
+    if not country_df.empty:
+        # 2. Revenue by Country (Animated Bar Chart)
+        top_rev = country_df.sort_values("Revenue", ascending=False).head(10)
+        fig2.add_trace(go.Bar(
+            x=top_rev["Country"], y=top_rev["Revenue"],
+            marker_color="#F59E0B", text=[f"${v/1e6:.1f}M" for v in top_rev["Revenue"]], textposition="auto"
+        ))
+        fig2.update_layout(**themed_layout(True), xaxis_title="Country", yaxis_title="Revenue (USD)")
+
+        # 5. Top Destinations (Horizontal Bar Chart)
+        top10 = country_df.head(10).sort_values("Visitors", ascending=True)
+        fig5.add_trace(go.Bar(
+            y=top10["Country"], x=top10["Visitors"], orientation="h",
+            marker=dict(color=top10["Visitors"], colorscale="Blues")
+        ))
+        fig5.update_layout(**themed_layout(True), xaxis_title="Visitors", yaxis_title="Country")
+        
+        # 6. Revenue vs Visitors (Scatter Plot)
+        fig6.add_trace(go.Scatter(
+            x=country_df["Visitors"], y=country_df["Revenue"],
+            mode="markers+text", text=country_df["Country"], textposition="top center",
+            marker=dict(size=12, color=country_df["AvgStay"], colorscale="Viridis", showscale=True, colorbar=dict(title="Avg Stay"))
+        ))
+        fig6.update_layout(**themed_layout(True), xaxis_title="Total Visitors", yaxis_title="Total Revenue")
+
+        # 7. Country Heatmap (Choropleth map)
+        fig7 = px.choropleth(
+            country_df, locations="Country", locationmode="country names",
+            color="Visitors", color_continuous_scale="Tealgrn"
+        )
+        fig7.update_layout(**themed_layout(True), geo=dict(bgcolor="rgba(0,0,0,0)", showframe=False))
+
+    if not season_df.empty:
+        # 3. Seasonal Tourism (Area Chart)
+        for season in season_df["Season"].unique():
+            sd = season_df[season_df["Season"] == season].sort_values("Year")
+            fig3.add_trace(go.Scatter(
+                x=sd["Year"].astype(str), y=sd["Visitors"], name=season,
+                mode="lines", fill="tonexty", line=dict(width=2)
+            ))
+        fig3.update_layout(**themed_layout(True), xaxis_title="Year", yaxis_title="Visitors")
+
+    if not type_df.empty:
+        # 4. Visitor Type Distribution (Pie Chart)
+        t_agg = type_df.groupby("Tourist_Type")["Revenue"].sum().reset_index()
+        fig4.add_trace(go.Pie(
+            labels=t_agg["Tourist_Type"], values=t_agg["Revenue"], hole=0.4,
+            marker=dict(colors=[TYPE_COLORS.get(t, "#6366F1") for t in t_agg["Tourist_Type"]])
+        ))
+        fig4.update_layout(**themed_layout(True))
 
     insights = html.Div([
         html.Div(className="chart-card-header", children=[
-            html.Span("💡 Key Insights", className="chart-card-title"),
+            html.Span("🤖 AI Business Insights", className="chart-card-title"),
         ]),
-        html.Div(style={"display":"flex","flexWrap":"wrap","gap":"12px","padding":"16px"}, children=[
-            html.Div(className="insight-item", children=[
-                html.Span("🏆", className="insight-icon"),
-                html.Span(f"Top destination: {top_c} leads all countries by visitor volume.", className="insight-text"),
-            ]),
-            html.Div(className="insight-item", children=[
-                html.Span("🏙️", className="insight-icon"),
-                html.Span(f"Most visited city: {top_city}.", className="insight-text"),
-            ]),
+        html.Div(style={"display":"flex","flexDirection":"column","gap":"12px","padding":"16px"}, children=[
             html.Div(className="insight-item", children=[
                 html.Span("📈", className="insight-icon"),
-                html.Span(f"YoY visitor growth: {yoy:+.1f}% compared to previous year.", className="insight-text"),
+                html.Span(f"Tourism changed by {yoy:+.1f}% compared to previous year.", className="insight-text"),
             ]),
             html.Div(className="insight-item", children=[
-                html.Span("🌤️", className="insight-icon"),
-                html.Span(f"Peak season: {best_season} records the highest tourist volumes.", className="insight-text"),
+                html.Span("☀️", className="insight-icon"),
+                html.Span(f"Highest performing country is {top_c} driving ${country_df['Revenue'].max()/1e6:.1f}M in revenue." if not country_df.empty else "No country data.", className="insight-text"),
             ]),
             html.Div(className="insight-item", children=[
-                html.Span("🎯", className="insight-icon"),
-                html.Span(f"Dominant tourist segment: {top_type} tourism drives most arrivals.", className="insight-text"),
+                html.Span("🧳", className="insight-icon"),
+                html.Span(f"Leisure tourists are the dominant demographic.", className="insight-text"),
             ]),
             html.Div(className="insight-item", children=[
-                html.Span("🔁", className="insight-icon"),
-                html.Span(f"{rep_pct:.1f}% of tourists are repeat visitors — strong destination loyalty.", className="insight-text"),
+                html.Span("🏨", className="insight-icon"),
+                html.Span(f"Hotel occupancy averages {avg_occ:.1f}%.", className="insight-text"),
             ]),
         ]),
     ])
@@ -338,20 +320,22 @@ def update_overview(years, countries, types):
     return (
         kv_visitors, trend_txt_r,
         kv_revenue,  trend_txt_r,
-        kv_stay,     html.Span(f"Avg across {total_v:,.0f} visitors"),
-        kv_rating,   html.Span(f"Based on {kpi.get('total_records',0):,} records"),
-        kv_occupancy, html.Span("Average hotel occupancy"),
-        kv_repeat,   html.Span("Share of returning tourists"),
-        fig_monthly, fig_yearly, fig_country, fig_type, fig_season, insights,
+        f"{avg_stay:.1f} days", html.Span(f"Avg across {total_v:,.0f} visitors"),
+        f"{avg_rat:.2f} / 5.0", html.Span(f"Based on {kpi.get('total_records',0):,} records"),
+        f"{avg_occ:.1f}%", html.Span("Average hotel occupancy"),
+        f"{rep_pct:.1f}%", html.Span("Share of returning tourists"),
+        fig1, fig2, fig3, fig4, fig5, fig6, fig7, fig8, insights
     )
-
 
 @dash.callback(
     Output("overview-year-filter", "value"),
     Output("overview-country-filter", "value"),
     Output("overview-type-filter", "value"),
+    Output("overview-season-filter", "value"),
+    Output("overview-accom-filter", "value"),
+    Output("overview-purp-filter", "value"),
     Input("overview-reset-btn", "n_clicks"),
     prevent_initial_call=True,
 )
 def reset_overview_filters(n):
-    return None, None, None
+    return None, None, None, None, None, None

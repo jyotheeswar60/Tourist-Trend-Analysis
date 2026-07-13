@@ -40,17 +40,17 @@
    ───────────────────────────────────────────────────────── */
 :root {
   /* Backgrounds */
-  --bg-app:          #080E1D;
-  --bg-surface:      #0F1729;
-  --bg-card:         #141E33;
-  --bg-card-hover:   #192342;
-  --bg-sidebar:      #0A1020;
-  --bg-navbar:       rgba(8, 14, 29, 0.92);
-  --bg-input:        #1A2540;
-  --bg-hover:        rgba(99, 102, 241, 0.08);
-  --bg-active:       rgba(99, 102, 241, 0.15);
-  --bg-overlay:      rgba(0, 0, 0, 0.6);
-  --bg-skeleton:     linear-gradient(90deg, #1A2540 25%, #1F2D4A 50%, #1A2540 75%);
+  --bg-app:          transparent;
+  --bg-surface:      rgba(15, 23, 41, 0.4);
+  --bg-card:         rgba(20, 30, 51, 0.65);
+  --bg-card-hover:   rgba(25, 35, 66, 0.75);
+  --bg-sidebar:      rgba(10, 16, 32, 0.75);
+  --bg-navbar:       rgba(8, 14, 29, 0.75);
+  --bg-input:        rgba(26, 37, 64, 0.6);
+  --bg-hover:        rgba(99, 102, 241, 0.15);
+  --bg-active:       rgba(99, 102, 241, 0.25);
+  --bg-overlay:      rgba(0, 0, 0, 0.7);
+  --bg-skeleton:     linear-gradient(90deg, rgba(26, 37, 64, 0.6) 25%, rgba(31, 45, 74, 0.6) 50%, rgba(26, 37, 64, 0.6) 75%);
 
   /* Accent Colors */
   --accent:          #6366F1;
@@ -378,6 +378,8 @@ input, select, textarea {
   width: var(--sidebar-w);
   height: calc(100vh - var(--navbar-h));
   background: var(--bg-sidebar);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-right: 1px solid rgba(255,255,255,0.05);
   display: flex;
   flex-direction: column;
@@ -575,6 +577,8 @@ input, select, textarea {
 
 .kpi-card {
   background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   padding: var(--space-6);
@@ -582,6 +586,7 @@ input, select, textarea {
   overflow: hidden;
   cursor: default;
   transition: all var(--t-base);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .kpi-card::after {
@@ -701,6 +706,8 @@ input, select, textarea {
    ───────────────────────────────────────────────────────── */
 .chart-card {
   background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   padding: var(--space-6);
@@ -708,6 +715,7 @@ input, select, textarea {
   margin-bottom: var(--space-5);
   position: relative;
   overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .chart-card:hover {
@@ -760,6 +768,8 @@ input, select, textarea {
    ───────────────────────────────────────────────────────── */
 .filter-panel {
   background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   padding: var(--space-5) var(--space-6);
@@ -768,6 +778,7 @@ input, select, textarea {
   align-items: flex-end;
   gap: var(--space-5);
   flex-wrap: wrap;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .filter-group {

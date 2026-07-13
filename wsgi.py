@@ -1,6 +1,6 @@
-"""wsgi.py — Production entry point for Gunicorn / Render.com.
+from app import app
 
-Usage:
-    gunicorn wsgi:server --bind 0.0.0.0:8050 --workers 2
-"""
-from app import server  # noqa: F401 — Gunicorn looks for 'server' in this module
+server = app.server
+
+if __name__ == "__main__":
+    app.run()
