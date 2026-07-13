@@ -8,7 +8,7 @@ from services.data_service import (
     get_correlation_matrix, get_numeric_data, get_outlier_data,
     get_statistical_summary, get_clustering_data, get_filter_options
 )
-from utils.chart_themes import themed_layout, PRIMARY_COLORS
+from utils.chart_themes import themed_layout, apply_empty_state_annotation, PRIMARY_COLORS
 from utils.chart_config import GRAPH_CONFIG
 
 dash.register_page(__name__, path="/advanced", name="Advanced Analytics",
@@ -19,7 +19,7 @@ YEAR_OPTS    = [{"label": str(y), "value": y} for y in _opts["years"]]
 COUNTRY_OPTS = [{"label": c, "value": c} for c in _opts["countries"]]
 
 layout = html.Div(className="page-enter", children=[
-    html.Div(className="page-header", children=[
+    html.Div(className="page-header animate-on-scroll fade-up", children=[
         html.Div(className="page-header-top", children=[
             html.Div([
                 html.H1("Advanced Analytics", className="page-title"),
@@ -29,7 +29,7 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # Filters
-    html.Div(className="filter-panel", children=[
+    html.Div(className="filter-panel animate-on-scroll fade-up stagger-1", children=[
         html.Div(className="filter-row", children=[
             html.Div(className="filter-group", children=[
                 html.Label("Year", className="filter-label"),
@@ -43,63 +43,81 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # KPI Row
-    html.Div(className="kpi-grid", style={"gridTemplateColumns":"repeat(4,1fr)"}, children=[
-        html.Div(className="kpi-card", children=[
+    html.Div(className="kpi-grid animate-on-scroll fade-up stagger-1", style={"gridTemplateColumns":"repeat(4,1fr)"}, children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Top Correlation", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:git-commit", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="adv-kpi-corr-pair"),
         ]),
-        html.Div(className="kpi-card", children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Revenue Driver", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:dollar-sign", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="adv-kpi-top-corr"),
         ]),
-        html.Div(className="kpi-card", children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Outliers Detected", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:alert-circle", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="adv-kpi-outliers"),
         ]),
-        html.Div(className="kpi-card", children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("K-Means Clusters", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:network", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="adv-kpi-clusters"),
         ]),
     ]),
 
     # Heatmap + Stats
-    html.Div(className="chart-grid", children=[
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+    html.Div(className="chart-grid animate-on-scroll fade-up stagger-2", children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Correlation Matrix", className="chart-card-title")]),
-            dcc.Graph(id="adv-corr-heatmap", config=GRAPH_CONFIG, style={"height": "400px"}),
+            dcc.Loading(
+                dcc.Graph(id="adv-corr-heatmap", config=GRAPH_CONFIG, style={"height": "400px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Statistical Summary", className="chart-card-title")]),
-            html.Div(className="table-container", id="adv-stats-div")
+            dcc.Loading(
+                html.Div(className="table-container", id="adv-stats-div"),
+                type="circle", color="#6366F1"
+            )
         ]),
     ]),
 
     # Outliers
-    html.Div(className="chart-card", children=[
+    html.Div(className="chart-card animate-on-scroll fade-up stagger-3", children=[
         html.Div(className="chart-card-header", children=[html.Span("Outlier Detection (Visitors vs Revenue)", className="chart-card-title")]),
-        dcc.Graph(id="adv-outlier-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
+        dcc.Loading(
+            dcc.Graph(id="adv-outlier-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
+            type="circle", color="#6366F1"
+        ),
     ]),
 
     # Clustering + Box plots
-    html.Div(className="chart-grid", children=[
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+    html.Div(className="chart-grid animate-on-scroll fade-up stagger-2", children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Country Clustering (K-Means)", className="chart-card-title")]),
-            dcc.Graph(id="adv-cluster-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
+            dcc.Loading(
+                dcc.Graph(id="adv-cluster-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Metric Distributions", className="chart-card-title")]),
-            dcc.Graph(id="adv-box-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
+            dcc.Loading(
+                dcc.Graph(id="adv-box-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
     ]),
 
     # Distribution
-    html.Div(className="chart-card", children=[
+    html.Div(className="chart-card animate-on-scroll fade-up stagger-3", children=[
         html.Div(className="chart-card-header", children=[html.Span("Visitor Volume Distribution", className="chart-card-title")]),
-        dcc.Graph(id="adv-hist-chart", config=GRAPH_CONFIG, style={"height": "350px"}),
+        dcc.Loading(
+            dcc.Graph(id="adv-hist-chart", config=GRAPH_CONFIG, style={"height": "350px"}),
+            type="circle", color="#6366F1"
+        ),
     ]),
 
     # Insights
-    html.Div(className="chart-card", id="adv-insights"),
+    html.Div(className="chart-card animate-on-scroll fade-up stagger-3", id="adv-insights"),
 ])
 
 
@@ -150,17 +168,19 @@ def update_adv(years, countries):
 
     # 2. Heatmap
     fig_corr = go.Figure()
-    if not corr_df.empty:
+    if corr_df.empty:
+        apply_empty_state_annotation(fig_corr)
+    else:
         fig_corr.add_trace(go.Heatmap(
             z=corr_df.values, x=corr_df.columns, y=corr_df.index,
             colorscale="RdBu", zmin=-1, zmax=1,
             text=corr_df.round(2).values, texttemplate="%{text}"
         ))
-    fig_corr.update_layout(**themed_layout(True))
-    fig_corr.update_layout(margin=dict(l=120, b=100))
+        fig_corr.update_layout(**themed_layout(True))
+        fig_corr.update_layout(margin=dict(l=120, b=100))
 
     # 3. Stats Table
-    table = html.Div("No data")
+    table = html.Div("No data available.")
     if not stat_df.empty:
         cols = stat_df.columns
         rows = [html.Tr([html.Td(row[c]) for c in cols]) for _, row in stat_df.iterrows()]
@@ -171,7 +191,9 @@ def update_adv(years, countries):
 
     # 4. Outliers Scatter
     fig_out = go.Figure()
-    if not out_df.empty:
+    if out_df.empty:
+        apply_empty_state_annotation(fig_out)
+    else:
         out_df["IsOutlier"] = out_df["Visitors_outlier"] | out_df["Revenue_USD_outlier"]
         colors = ["#EF4444" if o else "#3B82F6" for o in out_df["IsOutlier"]]
         fig_out.add_trace(go.Scatter(
@@ -179,34 +201,35 @@ def update_adv(years, countries):
             marker=dict(color=colors, size=6, opacity=0.6),
             text=["Outlier" if o else "Normal" for o in out_df["IsOutlier"]], hoverinfo="x+y+text"
         ))
-    fig_out.update_layout(**themed_layout(True), xaxis_title="Visitors", yaxis_title="Revenue ($)")
+        fig_out.update_layout(**themed_layout(True), xaxis_title="Visitors", yaxis_title="Revenue ($)")
 
     # 5. Clusters
     fig_clus = go.Figure()
-    if not clus_df.empty:
+    if clus_df.empty:
+        apply_empty_state_annotation(fig_clus)
+    else:
         fig_clus = px.scatter(
-            clus_df, x="AvgStay", y="AvgRating", color="Cluster", size="Visitors",
+            clus_df, x="AvgStay", y="AvgRating", size="Visitors", color="Cluster",
             hover_name="Country", color_discrete_sequence=PRIMARY_COLORS
         )
         fig_clus.update_layout(**themed_layout(True), xaxis_title="Average Stay", yaxis_title="Average Rating")
-    else:
-        fig_clus.update_layout(**themed_layout(True)).add_annotation(
-            text="Sklearn not available or insufficient data for clustering.",
-            showarrow=False, font=dict(size=14)
-        )
 
     # 6. Box plots
     fig_box = go.Figure()
-    if not num_df.empty:
+    if num_df.empty:
+        apply_empty_state_annotation(fig_box)
+    else:
         for c, color in zip(["Average_Stay_Days", "Customer_Rating", "Hotel_Occupancy"], PRIMARY_COLORS):
             fig_box.add_trace(go.Box(y=num_df[c], name=c, marker_color=color))
-    fig_box.update_layout(**themed_layout(True))
+        fig_box.update_layout(**themed_layout(True))
 
     # 7. Histogram
     fig_hist = go.Figure()
-    if not num_df.empty:
+    if num_df.empty:
+        apply_empty_state_annotation(fig_hist)
+    else:
         fig_hist.add_trace(go.Histogram(x=num_df["Visitors"], nbinsx=50, marker_color="#8B5CF6"))
-    fig_hist.update_layout(**themed_layout(True), xaxis_title="Visitors", yaxis_title="Frequency")
+        fig_hist.update_layout(**themed_layout(True), xaxis_title="Visitors", yaxis_title="Frequency")
 
     insights = html.Div([
         html.Div(className="chart-card-header", children=[html.Span("💡 Advanced Insights", className="chart-card-title")]),

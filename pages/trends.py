@@ -22,7 +22,7 @@ MONTH_NAMES  = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov
 
 
 layout = html.Div(className="page-enter", children=[
-    html.Div(className="page-header", children=[
+    html.Div(className="page-header animate-on-scroll fade-up", children=[
         html.Div(className="page-header-top", children=[
             html.Div([
                 html.H1("Tourism Trends", className="page-title"),
@@ -32,7 +32,7 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # Filters
-    html.Div(className="filter-panel", children=[
+    html.Div(className="filter-panel animate-on-scroll fade-up stagger-1", children=[
         html.Div(className="filter-row", children=[
             html.Div(className="filter-group", children=[
                 html.Label("Year", className="filter-label"),
@@ -57,23 +57,23 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # KPI Row
-    html.Div(className="kpi-grid", style={"gridTemplateColumns":"repeat(4,1fr)"}, children=[
-        html.Div(className="kpi-card", children=[
+    html.Div(className="kpi-grid animate-on-scroll fade-up stagger-1", style={"gridTemplateColumns":"repeat(4,1fr)"}, children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Total Visitors", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:users", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="trends-kpi-total"),
             html.Div("Across all years", className="kpi-card-trend"),
         ]),
-        html.Div(className="kpi-card", children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("YoY Growth", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:trending-up", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="trends-kpi-growth"),
             html.Div("Latest vs previous year", className="kpi-card-trend"),
         ]),
-        html.Div(className="kpi-card", children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Peak Month", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:calendar", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="trends-kpi-peak-month"),
             html.Div("Highest visitor month", className="kpi-card-trend"),
         ]),
-        html.Div(className="kpi-card", children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Best Season", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:sun", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="trends-kpi-best-season"),
             html.Div("Highest arrivals season", className="kpi-card-trend"),
@@ -81,7 +81,7 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # Monthly with MA — full width
-    html.Div(className="chart-card", children=[
+    html.Div(className="chart-card animate-on-scroll fade-up stagger-3", children=[
         html.Div(className="chart-card-header", children=[html.Span("Monthly Arrivals + 3-Month Moving Average", className="chart-card-title")]),
         dcc.Loading(
             dcc.Graph(id="trends-monthly-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
@@ -90,15 +90,15 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # Yearly + Quarterly heatmap
-    html.Div(className="chart-grid", children=[
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+    html.Div(className="chart-grid animate-on-scroll fade-up stagger-2", children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Yearly Visitor Comparison", className="chart-card-title")]),
             dcc.Loading(
                 dcc.Graph(id="trends-yearly-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
                 type="circle", color="#6366F1"
             ),
         ]),
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Quarterly Heatmap", className="chart-card-title")]),
             dcc.Loading(
                 dcc.Graph(id="trends-quarterly-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
@@ -108,15 +108,15 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # Seasonal + Type stacked area
-    html.Div(className="chart-grid", children=[
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+    html.Div(className="chart-grid animate-on-scroll fade-up stagger-2", children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Seasonal Trends by Year", className="chart-card-title")]),
             dcc.Loading(
                 dcc.Graph(id="trends-seasonal-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
                 type="circle", color="#6366F1"
             ),
         ]),
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Tourist Type Mix Over Time", className="chart-card-title")]),
             dcc.Loading(
                 dcc.Graph(id="trends-type-chart", config=GRAPH_CONFIG, style={"height": "360px"}),
@@ -126,7 +126,7 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # Insights
-    html.Div(className="chart-card", id="trends-insights"),
+    html.Div(className="chart-card animate-on-scroll fade-up stagger-3", id="trends-insights"),
 ])
 
 

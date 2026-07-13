@@ -21,7 +21,7 @@ SEASON_OPTS  = [{"label": s, "value": s} for s in _opts["seasons"]]
 MONTH_NAMES  = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 
 layout = html.Div(className="page-enter", children=[
-    html.Div(className="page-header", children=[
+    html.Div(className="page-header animate-on-scroll fade-up", children=[
         html.Div(className="page-header-top", children=[
             html.Div([
                 html.H1("Hotel Analytics", className="page-title"),
@@ -31,7 +31,7 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # Filters
-    html.Div(className="filter-panel", children=[
+    html.Div(className="filter-panel animate-on-scroll fade-up stagger-1", children=[
         html.Div(className="filter-row", children=[
             html.Div(className="filter-group", children=[
                 html.Label("Year", className="filter-label"),
@@ -49,41 +49,41 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # KPI Row
-    html.Div(className="kpi-grid", style={"gridTemplateColumns":"repeat(4,1fr)"}, children=[
-        html.Div(className="kpi-card", children=[
+    html.Div(className="kpi-grid animate-on-scroll fade-up stagger-1", style={"gridTemplateColumns":"repeat(4,1fr)"}, children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Avg Occupancy", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:hotel", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="hotel-kpi-avg-occ"),
         ]),
-        html.Div(className="kpi-card", children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Highest Occupancy (Country)", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:globe", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="hotel-kpi-top-country"),
         ]),
-        html.Div(className="kpi-card", children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Best Accom. Type", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:bed-double", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="hotel-kpi-best-accom"),
         ]),
-        html.Div(className="kpi-card", children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Peak Occupancy Month", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:calendar-check", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="hotel-kpi-peak-month"),
         ]),
     ]),
 
     # Trend
-    html.Div(className="chart-card", children=[
+    html.Div(className="chart-card animate-on-scroll fade-up stagger-3", children=[
         html.Div(className="chart-card-header", children=[html.Span("Occupancy Trend", className="chart-card-title")]),
         dcc.Graph(id="hotel-trend-chart", config=GRAPH_CONFIG, style={"height": "380px"}),
     ]),
 
     # Country + Heatmap
-    html.Div(className="chart-grid", children=[
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+    html.Div(className="chart-grid animate-on-scroll fade-up stagger-2", children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Occupancy by Country (Top 15)", className="chart-card-title")]),
             dcc.Loading(
                 dcc.Graph(id="hotel-country-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
                 type="circle", color="#6366F1"
             ),
         ]),
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Occupancy by Season & Accommodation", className="chart-card-title")]),
             dcc.Loading(
                 dcc.Graph(id="hotel-season-heat", config=GRAPH_CONFIG, style={"height": "400px"}),
@@ -93,7 +93,7 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # Accom Perf
-    html.Div(className="chart-card", children=[
+    html.Div(className="chart-card animate-on-scroll fade-up stagger-3", children=[
         html.Div(className="chart-card-header", children=[html.Span("Accommodation Performance", className="chart-card-title")]),
         dcc.Loading(
             dcc.Graph(id="hotel-accom-chart", config=GRAPH_CONFIG, style={"height": "380px"}),
@@ -102,15 +102,15 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # Scatter + Donut
-    html.Div(className="chart-grid", children=[
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+    html.Div(className="chart-grid animate-on-scroll fade-up stagger-2", children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Occupancy vs Revenue (by Country)", className="chart-card-title")]),
             dcc.Loading(
                 dcc.Graph(id="hotel-scatter", config=GRAPH_CONFIG, style={"height": "380px"}),
                 type="circle", color="#6366F1"
             ),
         ]),
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Accommodation Revenue Share", className="chart-card-title")]),
             dcc.Loading(
                 dcc.Graph(id="hotel-accom-rev", config=GRAPH_CONFIG, style={"height": "380px"}),
@@ -120,7 +120,7 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # Insights
-    html.Div(className="chart-card", id="hotel-insights"),
+    html.Div(className="chart-card animate-on-scroll fade-up stagger-3", id="hotel-insights"),
 ])
 
 @dash.callback(

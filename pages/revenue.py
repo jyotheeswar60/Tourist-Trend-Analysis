@@ -22,7 +22,7 @@ MONTH_NAMES  = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov
 
 
 layout = html.Div(className="page-enter", children=[
-    html.Div(className="page-header", children=[
+    html.Div(className="page-header animate-on-scroll fade-up", children=[
         html.Div(className="page-header-top", children=[
             html.Div([
                 html.H1("Revenue Analytics", className="page-title"),
@@ -32,7 +32,7 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # Filters
-    html.Div(className="filter-panel", children=[
+    html.Div(className="filter-panel animate-on-scroll fade-up stagger-1", children=[
         html.Div(className="filter-row", children=[
             html.Div(className="filter-group", children=[
                 html.Label("Year", className="filter-label"),
@@ -50,31 +50,31 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # KPI Row
-    html.Div(className="kpi-grid", style={"gridTemplateColumns":"repeat(5,1fr)"}, children=[
-        html.Div(className="kpi-card", children=[
+    html.Div(className="kpi-grid animate-on-scroll fade-up stagger-1", style={"gridTemplateColumns":"repeat(5,1fr)"}, children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Total Revenue", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:dollar-sign", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="rev-kpi-total"),
         ]),
-        html.Div(className="kpi-card", children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Avg Spend / Visitor", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:credit-card", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="rev-kpi-avg-spend"),
         ]),
-        html.Div(className="kpi-card", children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Top Country", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:trophy", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="rev-kpi-top-country"),
         ]),
-        html.Div(className="kpi-card", children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Revenue Growth YoY", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:trending-up", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="rev-kpi-growth"),
         ]),
-        html.Div(className="kpi-card", children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Best Month", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:calendar-star", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="rev-kpi-best-month"),
         ]),
     ]),
 
     # Full width Monthly
-    html.Div(className="chart-card", children=[
+    html.Div(className="chart-card animate-on-scroll fade-up stagger-3", children=[
         html.Div(className="chart-card-header", children=[html.Span("Monthly Revenue", className="chart-card-title")]),
         dcc.Loading(
             dcc.Graph(id="rev-monthly-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
@@ -83,15 +83,15 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # Country + Type
-    html.Div(className="chart-grid", children=[
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+    html.Div(className="chart-grid animate-on-scroll fade-up stagger-2", children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Revenue by Country (Top 15)", className="chart-card-title")]),
             dcc.Loading(
                 dcc.Graph(id="rev-country-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
                 type="circle", color="#6366F1"
             ),
         ]),
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Revenue by Tourist Type", className="chart-card-title")]),
             dcc.Loading(
                 dcc.Graph(id="rev-type-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
@@ -101,15 +101,15 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # Channel + Accom
-    html.Div(className="chart-grid", children=[
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+    html.Div(className="chart-grid animate-on-scroll fade-up stagger-2", children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Revenue by Booking Channel", className="chart-card-title")]),
             dcc.Loading(
                 dcc.Graph(id="rev-channel-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
                 type="circle", color="#6366F1"
             ),
         ]),
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Revenue by Accommodation", className="chart-card-title")]),
             dcc.Loading(
                 dcc.Graph(id="rev-accom-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
@@ -119,7 +119,7 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # Scatter
-    html.Div(className="chart-card", children=[
+    html.Div(className="chart-card animate-on-scroll fade-up stagger-3", children=[
         html.Div(className="chart-card-header", children=[html.Span("Visitors vs Revenue by Country", className="chart-card-title")]),
         dcc.Loading(
             dcc.Graph(id="rev-scatter", config=GRAPH_CONFIG, style={"height": "400px"}),
@@ -128,7 +128,7 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # Insights
-    html.Div(className="chart-card", id="rev-insights"),
+    html.Div(className="chart-card animate-on-scroll fade-up stagger-3", id="rev-insights"),
 ])
 
 @dash.callback(

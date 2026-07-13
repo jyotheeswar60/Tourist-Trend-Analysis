@@ -23,7 +23,7 @@ MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov"
 
 
 def make_kpi_card(label, value_id, icon, subtitle=""):
-    return html.Div(className="kpi-card", children=[
+    return html.Div(className="kpi-card animate-on-scroll fade-up", children=[
         html.Div(className="kpi-card-header", children=[
             html.Span(label, className="kpi-card-label"),
             html.Div(DashIconify(icon=icon, width=20), className="kpi-card-icon-wrap"),
@@ -34,19 +34,26 @@ def make_kpi_card(label, value_id, icon, subtitle=""):
 
 
 layout = html.Div(className="page-enter", children=[
-    # Header
-    html.Div(className="page-header", children=[
-        html.Div(className="page-header-top", children=[
-            html.Div([
-                html.H1("Executive Overview", className="page-title"),
-                html.P("Real-time KPIs and performance summary across all destinations · 2020–2025",
-                       className="page-subtitle"),
+    # Hero Section
+    html.Div(className="hero-section animate-on-scroll fade-up", children=[
+        html.Div(className="hero-content", children=[
+            html.Div(className="hero-icon-wrap", children=[
+                DashIconify(icon="lucide:globe-2", width=48, color="#3B82F6", className="hero-globe-icon")
             ]),
-        ]),
+            html.H1("Tourism Analytics Dashboard", className="hero-title"),
+            html.H3("Interactive Global Tourism Intelligence Platform", className="hero-subtitle"),
+            html.P("Analyze global travel trends, revenue streams, and demographic insights across 25 countries and 100+ cities in real-time.", className="hero-desc"),
+            html.Div(className="hero-stats", children=[
+                html.Span([DashIconify(icon="lucide:clock", width=14), " Last Updated: Just now"], className="hero-stat"),
+                html.Span([DashIconify(icon="lucide:map-pin", width=14), " Destinations: 25 Countries"], className="hero-stat"),
+                html.Span([DashIconify(icon="lucide:filter", width=14), " Active Filters: Global"], className="hero-stat"),
+                html.Span([DashIconify(icon="lucide:activity", width=14), " Status: Live Data"], className="hero-stat live-stat"),
+            ])
+        ])
     ]),
 
     # Filters
-    html.Div(className="filter-panel", children=[
+    html.Div(className="filter-panel animate-on-scroll fade-up stagger-1", children=[
         html.Div(className="filter-row", children=[
             html.Div(className="filter-group", children=[
                 html.Label("Year", className="filter-label"),
@@ -71,7 +78,7 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # KPI Grid
-    html.Div(className="kpi-grid", children=[
+    html.Div(className="kpi-grid animate-on-scroll fade-up stagger-1", children=[
         make_kpi_card("Total Visitors",   "overview-kpi-visitors",  "lucide:users"),
         make_kpi_card("Total Revenue",    "overview-kpi-revenue",   "lucide:dollar-sign"),
         make_kpi_card("Avg Stay (Days)",  "overview-kpi-stay",      "lucide:calendar-days"),
@@ -81,8 +88,8 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # Row 1: Monthly + Yearly
-    html.Div(className="chart-grid", children=[
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+    html.Div(className="chart-grid animate-on-scroll fade-up stagger-2", children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[
                 html.Span("Monthly Visitor Arrivals", className="chart-card-title"),
             ]),
@@ -91,7 +98,7 @@ layout = html.Div(className="page-enter", children=[
                 type="circle", color="#6366F1"
             ),
         ]),
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[
                 html.Span("Yearly Performance", className="chart-card-title"),
             ]),
@@ -103,8 +110,8 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # Row 2: Country + Type + Season
-    html.Div(className="chart-grid", children=[
-        html.Div(className="chart-card", style={"flex": "1.4"}, children=[
+    html.Div(className="chart-grid animate-on-scroll fade-up stagger-2", children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1.4"}, children=[
             html.Div(className="chart-card-header", children=[
                 html.Span("Top Countries by Visitors", className="chart-card-title"),
             ]),
@@ -113,7 +120,7 @@ layout = html.Div(className="page-enter", children=[
                 type="circle", color="#6366F1"
             ),
         ]),
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[
                 html.Span("Tourist Type Mix", className="chart-card-title"),
             ]),
@@ -122,7 +129,7 @@ layout = html.Div(className="page-enter", children=[
                 type="circle", color="#6366F1"
             ),
         ]),
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[
                 html.Span("Seasonal Distribution", className="chart-card-title"),
             ]),
@@ -134,7 +141,7 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # Insights
-    html.Div(className="chart-card", id="overview-insights", children=[]),
+    html.Div(className="chart-card animate-on-scroll fade-up stagger-3", id="overview-insights", children=[]),
 ])
 
 

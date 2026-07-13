@@ -46,17 +46,7 @@ def create_navbar() -> html.Div:
             # ── Right Section ────────────────────────────────────────────
             html.Div(
                 className="navbar-right",
-                children=[
-                    # Live indicator
-                    html.Div(
-                        className="navbar-live-badge",
-                        title="Data is up to date",
-                        children=[
-                            html.Div(className="navbar-live-dot"),
-                            html.Span("Live"),
-                        ],
-                    ),
-                ],
+                children=[],
             ),
         ],
     )

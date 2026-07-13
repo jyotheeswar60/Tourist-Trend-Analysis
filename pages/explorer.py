@@ -30,7 +30,7 @@ top_t = df.groupby("Tourist_Type")["Visitors"].sum().reset_index()
 fig_tp = go.Figure(go.Pie(labels=top_t["Tourist_Type"], values=top_t["Visitors"], hole=0.5)).update_layout(**themed_layout(True)).update_layout(margin=dict(t=20, b=20), height=250)
 
 layout = html.Div(className="page-enter", children=[
-    html.Div(className="page-header", children=[
+    html.Div(className="page-header animate-on-scroll fade-up", children=[
         html.Div(className="page-header-top", children=[
             html.Div([
                 html.H1("Data Explorer", className="page-title"),
@@ -40,7 +40,7 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # Filters & Search
-    html.Div(className="filter-panel", children=[
+    html.Div(className="filter-panel animate-on-scroll fade-up stagger-1", children=[
         html.Div(className="filter-row", children=[
             html.Div(className="filter-group", children=[
                 html.Label("Search", className="filter-label"),
@@ -66,85 +66,103 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # Quality Cards (Static)
-    html.Div(className="kpi-grid", style={"gridTemplateColumns":"repeat(5,1fr)"}, children=[
-        html.Div(className="kpi-card", children=[
+    html.Div(className="kpi-grid animate-on-scroll fade-up stagger-1", style={"gridTemplateColumns":"repeat(5,1fr)"}, children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Total Rows", className="kpi-card-label")]),
             html.Div(f"{qual['total_rows']:,}", className="kpi-card-value"),
         ]),
-        html.Div(className="kpi-card", children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Columns", className="kpi-card-label")]),
             html.Div(f"{qual['total_cols']}", className="kpi-card-value"),
         ]),
-        html.Div(className="kpi-card", children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Missing Values", className="kpi-card-label")]),
             html.Div(f"{qual['missing']}", className="kpi-card-value"),
         ]),
-        html.Div(className="kpi-card", children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Duplicates", className="kpi-card-label")]),
             html.Div(f"{qual['duplicates']}", className="kpi-card-value"),
         ]),
-        html.Div(className="kpi-card", children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Date Range", className="kpi-card-label")]),
             html.Div(qual['date_range'], className="kpi-card-value", style={"fontSize":"20px"}),
         ]),
     ]),
 
     # Dist charts
-    html.Div(className="chart-grid", style={"gridTemplateColumns":"repeat(4,1fr)"}, children=[
-        html.Div(className="chart-card", children=[
+    html.Div(className="chart-grid animate-on-scroll fade-up stagger-2", style={"gridTemplateColumns":"repeat(4,1fr)"}, children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", children=[
             html.Div(className="chart-card-header", children=[html.Span("Visitors Dist", className="chart-card-title")]),
-            dcc.Graph(figure=fig_vh, config=GRAPH_CONFIG),
+            dcc.Loading(
+                dcc.Graph(figure=fig_vh, config=GRAPH_CONFIG),
+                type="circle", color="#6366F1"
+            ),
         ]),
-        html.Div(className="chart-card", children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", children=[
             html.Div(className="chart-card-header", children=[html.Span("Revenue Dist", className="chart-card-title")]),
-            dcc.Graph(figure=fig_rh, config=GRAPH_CONFIG),
+            dcc.Loading(
+                dcc.Graph(figure=fig_rh, config=GRAPH_CONFIG),
+                type="circle", color="#6366F1"
+            ),
         ]),
-        html.Div(className="chart-card", children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", children=[
             html.Div(className="chart-card-header", children=[html.Span("Top Countries", className="chart-card-title")]),
-            dcc.Graph(figure=fig_cb, config=GRAPH_CONFIG),
+            dcc.Loading(
+                dcc.Graph(figure=fig_cb, config=GRAPH_CONFIG),
+                type="circle", color="#6366F1"
+            ),
         ]),
-        html.Div(className="chart-card", children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", children=[
             html.Div(className="chart-card-header", children=[html.Span("Tourist Types", className="chart-card-title")]),
-            dcc.Graph(figure=fig_tp, config=GRAPH_CONFIG),
+            dcc.Loading(
+                dcc.Graph(figure=fig_tp, config=GRAPH_CONFIG),
+                type="circle", color="#6366F1"
+            ),
         ]),
     ]),
 
     # Stats Table
-    html.Div(className="chart-card", children=[
+    html.Div(className="chart-card animate-on-scroll fade-up stagger-3", children=[
         html.Div(className="chart-card-header", children=[html.Span("Statistical Summary (Filtered)", className="chart-card-title")]),
-        html.Div(className="table-container", id="exp-stats-div")
+        dcc.Loading(
+            html.Div(className="table-container", id="exp-stats-div"),
+            type="circle", color="#6366F1"
+        )
     ]),
 
     # Data Table
-    html.Div(className="chart-card", children=[
+    html.Div(className="chart-card animate-on-scroll fade-up stagger-3", children=[
         html.Div(className="chart-card-header", children=[
             html.Span("Dataset Explorer", className="chart-card-title"),
             html.Span(" (showing up to 1000 rows for performance)", style={"color":"#94A3B8","fontSize":"12px"})
         ]),
-        dash_table.DataTable(
-            id="exp-data-table",
-            page_size=15,
-            sort_action="native",
-            filter_action="native",
-            style_table={"overflowX": "auto"},
-            style_header={
-                "backgroundColor": "#1A2540",
-                "color": "#F1F5F9",
-                "fontWeight": "600",
-                "border": "1px solid rgba(255,255,255,0.06)"
-            },
-            style_cell={
-                "backgroundColor": "#0F1729",
-                "color": "#94A3B8",
-                "border": "1px solid rgba(255,255,255,0.06)",
-                "padding": "10px 12px",
-                "fontSize": "12px",
-                "textAlign": "left"
-            },
-            style_data_conditional=[{
-                "if": {"row_index": "odd"},
-                "backgroundColor": "#141E33"
-            }],
+        dcc.Loading(
+            dash_table.DataTable(
+                id="exp-data-table",
+                page_size=15,
+                sort_action="native",
+                filter_action="native",
+                style_table={"overflowX": "auto"},
+                style_header={
+                    "backgroundColor": "#1A2540",
+                    "color": "#F1F5F9",
+                    "fontWeight": "600",
+                    "border": "1px solid rgba(255,255,255,0.06)"
+                },
+                style_cell={
+                    "backgroundColor": "#0F1729",
+                    "color": "#94A3B8",
+                    "border": "1px solid rgba(255,255,255,0.06)",
+                    "padding": "10px 12px",
+                    "fontSize": "12px",
+                    "textAlign": "left"
+                },
+                style_data_conditional=[{
+                    "if": {"row_index": "odd"},
+                    "backgroundColor": "#141E33"
+                }],
+            ),
+            type="circle", color="#6366F1"
         )
     ]),
 ])

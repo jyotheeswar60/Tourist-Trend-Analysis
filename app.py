@@ -76,6 +76,18 @@ app.layout = html.Div(
     id="app-container",
     className="dark-mode",      # Default theme
     children=[
+        # ── Background Layers ────────────────────────────────────────────
+        html.Div(
+            className="bg-layer-container",
+            children=[
+                html.Div(className="bg-image"),
+                html.Div(className="bg-glow-layer"),
+                html.Div(className="bg-routes"),
+                html.Div(className="bg-particles"),
+                html.Div(className="bg-light-sweep"),
+                html.Div(className="bg-overlay"),
+            ]
+        ),
 
         # ── Client-side State Stores ─────────────────────────────────────
         # dcc.Store persists data in the browser session without a round-trip.

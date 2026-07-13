@@ -157,17 +157,9 @@ def create_sidebar() -> html.Div:
                             color="white",
                         ),
                     ),
-                    html.Div(
-                        children=[
-                            html.Span(
-                                className="sidebar-logo-text",
-                                children="Tourism Analytics",
-                            ),
-                            html.Span(
-                                className="sidebar-logo-sub",
-                                children="BI Platform",
-                            ),
-                        ]
+                    html.Span(
+                        className="sidebar-logo-text",
+                        children="Tourism Analytics",
                     ),
                 ],
             ),
@@ -176,18 +168,6 @@ def create_sidebar() -> html.Div:
             html.Nav(
                 className="sidebar-nav",
                 children=nav_sections,
-            ),
-
-            # ── Footer ───────────────────────────────────────────────────
-            html.Div(
-                className="sidebar-footer",
-                children=[
-                    html.Div(className="sidebar-footer-version", children="v1.0.0"),
-                    html.Div(
-                        className="sidebar-footer-text",
-                        children="Portfolio Project · 2025",
-                    ),
-                ],
             ),
         ],
     )

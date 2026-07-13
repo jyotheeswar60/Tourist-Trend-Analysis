@@ -49,7 +49,7 @@ def _make_layout(is_dark: bool = True) -> dict:
 
     return dict(
         paper_bgcolor=paper,
-        plot_bgcolor=bg,
+        plot_bgcolor="rgba(0,0,0,0)", # transparent background to show through glassmorphism
         font=dict(family="Inter, sans-serif", color=text, size=12),
         title_font=dict(family="Inter, sans-serif", color=title, size=15, weight="bold"),
         xaxis=dict(
@@ -57,12 +57,14 @@ def _make_layout(is_dark: bool = True) -> dict:
             linecolor=grid, tickcolor=grid,
             title_font=dict(color=text), tickfont=dict(color=text),
             zeroline=False,
+            showspikes=True, spikecolor=grid, spikethickness=1,
         ),
         yaxis=dict(
             gridcolor=grid, gridwidth=1,
             linecolor=grid, tickcolor=grid,
             title_font=dict(color=text), tickfont=dict(color=text),
             zeroline=False,
+            showspikes=True, spikecolor=grid, spikethickness=1,
         ),
         legend=dict(
             bgcolor="rgba(0,0,0,0)",
@@ -73,11 +75,13 @@ def _make_layout(is_dark: bool = True) -> dict:
         colorway=PRIMARY_COLORS,
         hovermode="x unified",
         hoverlabel=dict(
-            bgcolor="#1E293B",
+            bgcolor="rgba(15, 23, 41, 0.9)",
             font_color="#F1F5F9",
             bordercolor="#6366F1",
+            font_family="Inter",
         ),
         modebar=dict(bgcolor="rgba(0,0,0,0)", color=text),
+        transition=dict(duration=700, easing="cubic-in-out"),
     )
 
 

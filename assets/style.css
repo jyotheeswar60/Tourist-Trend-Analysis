@@ -425,15 +425,6 @@ input, select, textarea {
   white-space: nowrap;
 }
 
-.sidebar-logo-sub {
-  font-size: 10px;
-  font-weight: 400;
-  color: rgba(255,255,255,0.35);
-  display: block;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
 .sidebar.collapsed .sidebar-logo-text { opacity: 0; pointer-events: none; }
 
 /* Sidebar Nav */
@@ -516,34 +507,7 @@ input, select, textarea {
 
 .sidebar.collapsed .nav-item-label { opacity: 0; pointer-events: none; }
 
-/* Sidebar Footer */
-.sidebar-footer {
-  padding: var(--space-4) var(--space-4);
-  border-top: 1px solid rgba(255,255,255,0.05);
-  flex-shrink: 0;
-  overflow: hidden;
-}
 
-.sidebar-footer-version {
-  font-size: 11px;
-  font-weight: 600;
-  color: rgba(255,255,255,0.3);
-  font-family: 'JetBrains Mono', monospace;
-  white-space: nowrap;
-}
-
-.sidebar-footer-text {
-  font-size: 10px;
-  color: rgba(255,255,255,0.2);
-  margin-top: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  opacity: 1;
-  transition: opacity var(--t-base);
-}
-
-.sidebar.collapsed .sidebar-footer-text { opacity: 0; }
 
 
 /* ─────────────────────────────────────────────────────────

@@ -9,7 +9,7 @@ from services.data_service import (
     get_stay_distribution, get_rating_distribution, get_repeat_visitor_stats,
     get_weather_impact, get_type_trends, get_filter_options
 )
-from utils.chart_themes import themed_layout, PRIMARY_COLORS, TYPE_COLORS
+from utils.chart_themes import themed_layout, apply_empty_state_annotation, PRIMARY_COLORS, TYPE_COLORS
 from utils.chart_config import GRAPH_CONFIG
 import numpy as np
 
@@ -22,7 +22,7 @@ COUNTRY_OPTS = [{"label": c, "value": c} for c in _opts["countries"]]
 TYPE_OPTS    = [{"label": t, "value": t} for t in _opts["tourist_types"]]
 
 layout = html.Div(className="page-enter", children=[
-    html.Div(className="page-header", children=[
+    html.Div(className="page-header animate-on-scroll fade-up", children=[
         html.Div(className="page-header-top", children=[
             html.Div([
                 html.H1("Visitor Behavior", className="page-title"),
@@ -32,7 +32,7 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # Filters
-    html.Div(className="filter-panel", children=[
+    html.Div(className="filter-panel animate-on-scroll fade-up stagger-1", children=[
         html.Div(className="filter-row", children=[
             html.Div(className="filter-group", children=[
                 html.Label("Year", className="filter-label"),
@@ -50,73 +50,97 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # KPI Row
-    html.Div(className="kpi-grid", style={"gridTemplateColumns":"repeat(4,1fr)"}, children=[
-        html.Div(className="kpi-card", children=[
+    html.Div(className="kpi-grid animate-on-scroll fade-up stagger-1", style={"gridTemplateColumns":"repeat(4,1fr)"}, children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Avg Stay Days", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:calendar-clock", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="vb-kpi-avg-stay"),
         ]),
-        html.Div(className="kpi-card", children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Avg Rating", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:star", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="vb-kpi-avg-rating"),
         ]),
-        html.Div(className="kpi-card", children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Repeat Visitor %", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:refresh-cw", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="vb-kpi-repeat-pct"),
         ]),
-        html.Div(className="kpi-card", children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Top Purpose", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:briefcase", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="vb-kpi-top-purpose"),
         ]),
     ]),
 
     # Purpose & Type
-    html.Div(className="chart-grid", children=[
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+    html.Div(className="chart-grid animate-on-scroll fade-up stagger-2", children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Travel Purpose", className="chart-card-title")]),
-            dcc.Graph(id="vb-purpose-chart", config=GRAPH_CONFIG, style={"height": "380px"}),
+            dcc.Loading(
+                dcc.Graph(id="vb-purpose-chart", config=GRAPH_CONFIG, style={"height": "380px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Tourist Type", className="chart-card-title")]),
-            dcc.Graph(id="vb-type-donut", config=GRAPH_CONFIG, style={"height": "380px"}),
+            dcc.Loading(
+                dcc.Graph(id="vb-type-donut", config=GRAPH_CONFIG, style={"height": "380px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
     ]),
 
     # 3-col split: Transport, Accom, Repeat
-    html.Div(className="chart-grid", style={"gridTemplateColumns":"repeat(3,1fr)"}, children=[
-        html.Div(className="chart-card", children=[
+    html.Div(className="chart-grid animate-on-scroll fade-up stagger-2", style={"gridTemplateColumns":"repeat(3,1fr)"}, children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", children=[
             html.Div(className="chart-card-header", children=[html.Span("Transport Mode", className="chart-card-title")]),
-            dcc.Graph(id="vb-transport-chart", config=GRAPH_CONFIG, style={"height": "340px"}),
+            dcc.Loading(
+                dcc.Graph(id="vb-transport-chart", config=GRAPH_CONFIG, style={"height": "340px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
-        html.Div(className="chart-card", children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", children=[
             html.Div(className="chart-card-header", children=[html.Span("Accommodation", className="chart-card-title")]),
-            dcc.Graph(id="vb-accom-chart", config=GRAPH_CONFIG, style={"height": "340px"}),
+            dcc.Loading(
+                dcc.Graph(id="vb-accom-chart", config=GRAPH_CONFIG, style={"height": "340px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
-        html.Div(className="chart-card", children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", children=[
             html.Div(className="chart-card-header", children=[html.Span("New vs Repeat", className="chart-card-title")]),
-            dcc.Graph(id="vb-repeat-chart", config=GRAPH_CONFIG, style={"height": "340px"}),
+            dcc.Loading(
+                dcc.Graph(id="vb-repeat-chart", config=GRAPH_CONFIG, style={"height": "340px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
     ]),
 
     # Histograms
-    html.Div(className="chart-grid", children=[
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+    html.Div(className="chart-grid animate-on-scroll fade-up stagger-2", children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Stay Duration Distribution", className="chart-card-title")]),
-            dcc.Graph(id="vb-stay-hist", config=GRAPH_CONFIG, style={"height": "380px"}),
+            dcc.Loading(
+                dcc.Graph(id="vb-stay-hist", config=GRAPH_CONFIG, style={"height": "380px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Rating Distribution", className="chart-card-title")]),
-            dcc.Graph(id="vb-rating-hist", config=GRAPH_CONFIG, style={"height": "380px"}),
+            dcc.Loading(
+                dcc.Graph(id="vb-rating-hist", config=GRAPH_CONFIG, style={"height": "380px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
     ]),
 
     # Weather
-    html.Div(className="chart-card", children=[
+    html.Div(className="chart-card animate-on-scroll fade-up stagger-3", children=[
         html.Div(className="chart-card-header", children=[html.Span("Weather Impact on Visitors", className="chart-card-title")]),
-        dcc.Graph(id="vb-weather-chart", config=GRAPH_CONFIG, style={"height": "380px"}),
+        dcc.Loading(
+            dcc.Graph(id="vb-weather-chart", config=GRAPH_CONFIG, style={"height": "380px"}),
+            type="circle", color="#6366F1"
+        ),
     ]),
 
     # Insights
-    html.Div(className="chart-card", id="vb-insights"),
+    html.Div(className="chart-card animate-on-scroll fade-up stagger-3", id="vb-insights"),
 ])
 
 
@@ -167,74 +191,90 @@ def update_vb(years, countries, types):
 
     # Purpose
     fig_purp = go.Figure()
-    if not purpose_df.empty:
+    if purpose_df.empty:
+        apply_empty_state_annotation(fig_purp)
+    else:
         pdf = purpose_df.sort_values("Visitors", ascending=True)
         fig_purp.add_trace(go.Bar(
             y=pdf["Travel_Purpose"], x=pdf["Visitors"], orientation="h", marker_color="#6366F1"
         ))
-    fig_purp.update_layout(**themed_layout(True))
+        fig_purp.update_layout(**themed_layout(True))
 
     # Type
     fig_type = go.Figure()
-    if not type_df.empty:
+    if type_df.empty:
+        apply_empty_state_annotation(fig_type)
+    else:
         tdf = type_df.groupby("Tourist_Type")["Visitors"].sum().reset_index()
         fig_type.add_trace(go.Pie(
             labels=tdf["Tourist_Type"], values=tdf["Visitors"], hole=0.5,
             marker=dict(colors=[TYPE_COLORS.get(t, "#6366F1") for t in tdf["Tourist_Type"]])
         ))
-    fig_type.update_layout(**themed_layout(True))
+        fig_type.update_layout(**themed_layout(True))
 
     # Transport
     fig_trans = go.Figure()
-    if not transport_df.empty:
+    if transport_df.empty:
+        apply_empty_state_annotation(fig_trans)
+    else:
         fig_trans.add_trace(go.Pie(
             labels=transport_df["Transport_Mode"], values=transport_df["Visitors"],
             marker=dict(colors=PRIMARY_COLORS)
         ))
-    fig_trans.update_layout(**themed_layout(True))
+        fig_trans.update_layout(**themed_layout(True))
 
     # Accom
     fig_acc = go.Figure()
-    if not accom_df.empty:
+    if accom_df.empty:
+        apply_empty_state_annotation(fig_acc)
+    else:
         adf = accom_df.sort_values("Visitors", ascending=True)
         fig_acc.add_trace(go.Bar(
             y=adf["Accommodation_Type"], x=adf["Visitors"], orientation="h", marker_color="#10B981"
         ))
-    fig_acc.update_layout(**themed_layout(True))
+        fig_acc.update_layout(**themed_layout(True))
 
     # Repeat
     fig_rep = go.Figure()
-    if not repeat_df.empty:
+    if repeat_df.empty:
+        apply_empty_state_annotation(fig_rep)
+    else:
         fig_rep.add_trace(go.Pie(
             labels=repeat_df["Visitor_Label"], values=repeat_df["Count"], hole=0.5,
             marker=dict(colors=["#3B82F6", "#94A3B8"])
         ))
-    fig_rep.update_layout(**themed_layout(True))
+        fig_rep.update_layout(**themed_layout(True))
 
     # Stay Hist
     fig_stay = go.Figure()
-    if not stay_s.empty:
+    if stay_s.empty:
+        apply_empty_state_annotation(fig_stay)
+    else:
         fig_stay.add_trace(go.Histogram(
             x=stay_s, nbinsx=20, marker_color="#F59E0B"
         ))
-    fig_stay.update_layout(**themed_layout(True), xaxis_title="Days", yaxis_title="Count")
+        fig_stay.update_layout(**themed_layout(True), xaxis_title="Days", yaxis_title="Count")
 
     # Rating Hist
     fig_rat = go.Figure()
-    if not rating_s.empty:
+    if rating_s.empty:
+        apply_empty_state_annotation(fig_rat)
+    else:
         fig_rat.add_trace(go.Histogram(
             x=rating_s, nbinsx=10, marker_color="#EF4444"
         ))
-    fig_rat.update_layout(**themed_layout(True), xaxis_title="Rating (1-5)", yaxis_title="Count")
+        fig_rat.update_layout(**themed_layout(True), xaxis_title="Rating (1-5)", yaxis_title="Count")
 
     # Weather
     fig_wea = go.Figure()
-    if not weather_df.empty:
+    if weather_df.empty:
+        apply_empty_state_annotation(fig_wea)
+    else:
         wdf = weather_df.sort_values("Visitors", ascending=False)
         fig_wea.add_trace(go.Bar(
             x=wdf["Weather"], y=wdf["Visitors"], marker_color="#06B6D4"
         ))
-    fig_wea.update_layout(**themed_layout(True), xaxis_title="Weather Condition", yaxis_title="Visitors")
+        fig_wea.update_layout(**themed_layout(True), xaxis_title="Weather Condition", yaxis_title="Visitors")
 
     insights = html.Div([
         html.Div(className="chart-card-header", children=[html.Span("💡 Behavior Insights", className="chart-card-title")]),

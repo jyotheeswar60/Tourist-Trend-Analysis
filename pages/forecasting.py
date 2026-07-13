@@ -4,7 +4,7 @@ from dash import html, dcc, Input, Output
 import plotly.graph_objects as go
 from dash_iconify import DashIconify
 from services.data_service import get_forecast_data, get_filter_options
-from utils.chart_themes import themed_layout
+from utils.chart_themes import themed_layout, apply_empty_state_annotation
 from utils.chart_config import GRAPH_CONFIG
 import pandas as pd
 
@@ -16,7 +16,7 @@ COUNTRY_OPTS = [{"label": c, "value": c} for c in _opts["countries"]]
 TYPE_OPTS    = [{"label": t, "value": t} for t in _opts["tourist_types"]]
 
 layout = html.Div(className="page-enter", children=[
-    html.Div(className="page-header", children=[
+    html.Div(className="page-header animate-on-scroll fade-up", children=[
         html.Div(className="page-header-top", children=[
             html.Div([
                 html.H1("Forecasting", className="page-title"),
@@ -26,7 +26,7 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # Filters
-    html.Div(className="filter-panel", children=[
+    html.Div(className="filter-panel animate-on-scroll fade-up stagger-1", children=[
         html.Div(className="filter-row", children=[
             html.Div(className="filter-group", children=[
                 html.Label("Country", className="filter-label"),
@@ -45,20 +45,20 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # KPI Row
-    html.Div(className="kpi-grid", style={"gridTemplateColumns":"repeat(4,1fr)"}, children=[
-        html.Div(className="kpi-card", children=[
+    html.Div(className="kpi-grid animate-on-scroll fade-up stagger-1", style={"gridTemplateColumns":"repeat(4,1fr)"}, children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Forecast Period", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:clock", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="fc-kpi-periods"),
         ]),
-        html.Div(className="kpi-card", children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Projected Visitors (End)", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:users", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="fc-kpi-proj-visitors"),
         ]),
-        html.Div(className="kpi-card", children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Projected Revenue (End)", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:dollar-sign", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="fc-kpi-proj-revenue"),
         ]),
-        html.Div(className="kpi-card", children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Forecast Trend", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:trending-up", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="fc-kpi-trend"),
         ]),
@@ -68,31 +68,43 @@ layout = html.Div(className="page-enter", children=[
     html.Div(id="fc-error-msg", style={"color":"#EF4444", "padding":"10px", "display":"none"}),
 
     # Visitor Forecast
-    html.Div(className="chart-card", id="fc-vis-container", children=[
+    html.Div(className="chart-card animate-on-scroll fade-up stagger-3", id="fc-vis-container", children=[
         html.Div(className="chart-card-header", children=[html.Span("Visitor Volume Forecast", className="chart-card-title")]),
-        dcc.Graph(id="fc-visitor-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
+        dcc.Loading(
+            dcc.Graph(id="fc-visitor-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
+            type="circle", color="#6366F1"
+        ),
     ]),
 
     # Revenue Forecast
-    html.Div(className="chart-card", id="fc-rev-container", children=[
+    html.Div(className="chart-card animate-on-scroll fade-up stagger-3", id="fc-rev-container", children=[
         html.Div(className="chart-card-header", children=[html.Span("Revenue Forecast", className="chart-card-title")]),
-        dcc.Graph(id="fc-revenue-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
+        dcc.Loading(
+            dcc.Graph(id="fc-revenue-chart", config=GRAPH_CONFIG, style={"height": "400px"}),
+            type="circle", color="#6366F1"
+        ),
     ]),
 
     # Sub charts
-    html.Div(className="chart-grid", id="fc-sub-container", children=[
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+    html.Div(className="chart-grid animate-on-scroll fade-up stagger-2", id="fc-sub-container", children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Historical YoY Growth", className="chart-card-title")]),
-            dcc.Graph(id="fc-growth-chart", config=GRAPH_CONFIG, style={"height": "350px"}),
+            dcc.Loading(
+                dcc.Graph(id="fc-growth-chart", config=GRAPH_CONFIG, style={"height": "350px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Average Seasonal Pattern", className="chart-card-title")]),
-            dcc.Graph(id="fc-seasonal-chart", config=GRAPH_CONFIG, style={"height": "350px"}),
+            dcc.Loading(
+                dcc.Graph(id="fc-seasonal-chart", config=GRAPH_CONFIG, style={"height": "350px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
     ]),
 
     # Methodology
-    html.Div(className="chart-card", children=[
+    html.Div(className="chart-card animate-on-scroll fade-up stagger-3", children=[
         html.Div(className="chart-card-header", children=[html.Span("Model Methodology", className="chart-card-title")]),
         html.P("This forecast utilizes a linear trend progression built upon historical moving averages. "
                "The confidence band represents a ±15% variance from the projected mean, accounting for standard seasonal volatility. "
@@ -100,7 +112,7 @@ layout = html.Div(className="page-enter", children=[
                style={"padding":"16px", "color":"#94A3B8"})
     ]),
 
-    html.Div(className="chart-card", id="fc-insights"),
+    html.Div(className="chart-card animate-on-scroll fade-up stagger-3", id="fc-insights"),
 ])
 
 @dash.callback(
@@ -128,7 +140,8 @@ def update_forecast(countries, types, periods):
 
     res = get_forecast_data(periods, filters)
     
-    empty_fig = go.Figure().update_layout(**themed_layout(True))
+    empty_fig = go.Figure()
+    apply_empty_state_annotation(empty_fig)
 
     if "error" in res:
         return ("-", "-", "-", "-", empty_fig, empty_fig, empty_fig, empty_fig, "", 

@@ -1,0 +1,143 @@
+/* assets/background.css */
+
+/* Base Background Layers Container */
+.bg-layer-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -10; /* Keep it strictly behind all app content */
+    pointer-events: none; /* Do not interfere with clicks */
+    overflow: hidden;
+}
+
+/* 1. Base Image with Parallax & Subtle Pan Animation */
+.bg-image {
+    position: absolute;
+    top: -5%;
+    left: -5%;
+    width: 110%; /* Extra width for panning */
+    height: 110%;
+    background-image: url("bg.png");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Parallax effect on scroll */
+    /* Low contrast and blending */
+    filter: brightness(1.2) contrast(0.9) saturate(0.8);
+    animation: pan-parallax 60s linear infinite alternate;
+}
+
+@keyframes pan-parallax {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(-2%, -2%); }
+}
+
+/* 2. Glow/Floating effect applied to the base image to simulate landmark glowing */
+.bg-glow-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("bg.png");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    filter: brightness(1.8) contrast(1.2) blur(8px);
+    opacity: 0.15;
+    mix-blend-mode: screen;
+    animation: pulse-glow 8s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-glow {
+    0% { opacity: 0.1; transform: scale(1.0); }
+    100% { opacity: 0.25; transform: scale(1.02); }
+}
+
+/* 3. Dark Overlay to ensure dashboard text and charts remain readable (70-85% opacity) */
+.bg-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(8, 12, 23, 0.85) 0%, rgba(15, 23, 42, 0.75) 50%, rgba(5, 10, 20, 0.85) 100%);
+    z-index: 1;
+}
+
+/* 4. Very slow animated light sweep across the world map */
+.bg-light-sweep {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg, 
+        transparent 40%, 
+        rgba(99, 102, 241, 0.05) 45%, 
+        rgba(168, 85, 247, 0.1) 50%, 
+        rgba(99, 102, 241, 0.05) 55%, 
+        transparent 60%
+    );
+    z-index: 2;
+    animation: light-sweep 15s linear infinite;
+    mix-blend-mode: color-dodge;
+}
+
+@keyframes light-sweep {
+    0% { transform: translate(-30%, -30%); }
+    100% { transform: translate(30%, 30%); }
+}
+
+/* 5. Animated Glowing Travel Routes */
+/* Using multiple radial gradients moving across to simulate data/airplane lines traveling */
+.bg-routes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 30% 40%, rgba(56, 189, 248, 0.4) 0%, transparent 2%),
+        radial-gradient(circle at 60% 50%, rgba(168, 85, 247, 0.4) 0%, transparent 2%),
+        radial-gradient(circle at 80% 30%, rgba(56, 189, 248, 0.4) 0%, transparent 2%);
+    background-size: 200% 200%;
+    z-index: 3;
+    animation: route-travel 20s linear infinite;
+    mix-blend-mode: screen;
+}
+
+@keyframes route-travel {
+    0% { background-position: 0% 0%, 100% 100%, 50% 0%; }
+    100% { background-position: 100% 100%, 0% 0%, 50% 100%; }
+}
+
+/* 6. Tiny moving particles to create depth */
+/* Implemented via multiple background dots moving at different speeds (parallaxing themselves) */
+.bg-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px),
+        radial-gradient(rgba(168, 85, 247, 0.1) 1px, transparent 1px),
+        radial-gradient(rgba(56, 189, 248, 0.15) 1px, transparent 1px);
+    background-size: 60px 60px, 90px 90px, 150px 150px;
+    background-position: 0 0, 30px 30px, 75px 75px;
+    z-index: 4;
+    animation: particle-drift 40s linear infinite;
+}
+
+@keyframes particle-drift {
+    0% { background-position: 0 0, 30px 30px, 75px 75px; }
+    100% { background-position: 60px 60px, 120px 120px, -75px -75px; }
+}
+
+/* Guarantee app body remains transparent so background shows through */
+#app-container, .app-body, body, html {
+    background: transparent !important;
+}

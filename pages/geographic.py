@@ -7,7 +7,7 @@ from dash_iconify import DashIconify
 from services.data_service import (
     get_country_stats, get_city_stats, get_filter_options,
 )
-from utils.chart_themes import themed_layout, PRIMARY_COLORS
+from utils.chart_themes import themed_layout, apply_empty_state_annotation, PRIMARY_COLORS
 from utils.chart_config import GRAPH_CONFIG
 
 dash.register_page(__name__, path="/geographic", name="Geographic Analysis",
@@ -20,7 +20,7 @@ TYPE_OPTS   = [{"label": t, "value": t} for t in _opts["tourist_types"]]
 
 
 layout = html.Div(className="page-enter", children=[
-    html.Div(className="page-header", children=[
+    html.Div(className="page-header animate-on-scroll fade-up", children=[
         html.Div(className="page-header-top", children=[
             html.Div([
                 html.H1("Geographic Analysis", className="page-title"),
@@ -30,7 +30,7 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # Filters
-    html.Div(className="filter-panel", children=[
+    html.Div(className="filter-panel animate-on-scroll fade-up stagger-1", children=[
         html.Div(className="filter-row", children=[
             html.Div(className="filter-group", children=[
                 html.Label("Year", className="filter-label"),
@@ -48,63 +48,78 @@ layout = html.Div(className="page-enter", children=[
     ]),
 
     # KPI Row
-    html.Div(className="kpi-grid", style={"gridTemplateColumns":"repeat(4,1fr)"}, children=[
-        html.Div(className="kpi-card", children=[
+    html.Div(className="kpi-grid animate-on-scroll fade-up stagger-1", style={"gridTemplateColumns":"repeat(4,1fr)"}, children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Top Country (Visitors)", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:globe-2", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="geo-kpi-top-country"),
         ]),
-        html.Div(className="kpi-card", children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Top City (Revenue)", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:building-2", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="geo-kpi-top-city"),
         ]),
-        html.Div(className="kpi-card", children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Destinations", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:map-pin", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="geo-kpi-countries"),
         ]),
-        html.Div(className="kpi-card", children=[
+        html.Div(className="kpi-card animate-on-scroll fade-up", children=[
             html.Div(className="kpi-card-header", children=[html.Span("Avg Visitors per Country", className="kpi-card-label"), html.Div(DashIconify(icon="lucide:users", width=20), className="kpi-card-icon-wrap")]),
             html.Div("—", className="kpi-card-value", id="geo-kpi-avg-visitors"),
         ]),
     ]),
 
     # Full width bar
-    html.Div(className="chart-card", children=[
+    html.Div(className="chart-card animate-on-scroll fade-up stagger-3", children=[
         html.Div(className="chart-card-header", children=[html.Span("Top 15 Countries by Visitors & Revenue", className="chart-card-title")]),
-        dcc.Graph(id="geo-country-bar", config=GRAPH_CONFIG, style={"height": "400px"}),
+        dcc.Loading(
+            dcc.Graph(id="geo-country-bar", config=GRAPH_CONFIG, style={"height": "400px"}),
+            type="circle", color="#6366F1"
+        ),
     ]),
 
     # Treemap + City Bar
-    html.Div(className="chart-grid", children=[
-        html.Div(className="chart-card", style={"flex": "1.5"}, children=[
+    html.Div(className="chart-grid animate-on-scroll fade-up stagger-2", children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1.5"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Country Visitor Distribution (Size=Visitors, Color=Revenue)", className="chart-card-title")]),
-            dcc.Graph(id="geo-treemap", config=GRAPH_CONFIG, style={"height": "400px"}),
+            dcc.Loading(
+                dcc.Graph(id="geo-treemap", config=GRAPH_CONFIG, style={"height": "400px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Top 10 Cities", className="chart-card-title")]),
-            dcc.Graph(id="geo-city-bar", config=GRAPH_CONFIG, style={"height": "400px"}),
+            dcc.Loading(
+                dcc.Graph(id="geo-city-bar", config=GRAPH_CONFIG, style={"height": "400px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
     ]),
 
     # Scatter + Sunburst
-    html.Div(className="chart-grid", children=[
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+    html.Div(className="chart-grid animate-on-scroll fade-up stagger-2", children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Country Performance (Stay vs Rating)", className="chart-card-title")]),
-            dcc.Graph(id="geo-bubble", config=GRAPH_CONFIG, style={"height": "400px"}),
+            dcc.Loading(
+                dcc.Graph(id="geo-bubble", config=GRAPH_CONFIG, style={"height": "400px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
-        html.Div(className="chart-card", style={"flex": "1"}, children=[
+        html.Div(className="chart-card animate-on-scroll fade-up stagger-3", style={"flex": "1"}, children=[
             html.Div(className="chart-card-header", children=[html.Span("Revenue Concentration", className="chart-card-title")]),
-            dcc.Graph(id="geo-sunburst", config=GRAPH_CONFIG, style={"height": "400px"}),
+            dcc.Loading(
+                dcc.Graph(id="geo-sunburst", config=GRAPH_CONFIG, style={"height": "400px"}),
+                type="circle", color="#6366F1"
+            ),
         ]),
     ]),
 
     # Rankings Table
-    html.Div(className="chart-card", children=[
+    html.Div(className="chart-card animate-on-scroll fade-up stagger-3", children=[
         html.Div(className="chart-card-header", children=[html.Span("Top 25 Country Rankings", className="chart-card-title")]),
         html.Div(className="table-container", id="geo-rankings-table")
     ]),
 
     # Insights
-    html.Div(className="chart-card", id="geo-insights"),
+    html.Div(className="chart-card animate-on-scroll fade-up stagger-3", id="geo-insights"),
 ])
 
 
@@ -143,37 +158,48 @@ def update_geo(years, seasons, types):
 
     # ── Country Bar (Top 15) ─────────────────────────────────────────────
     fig_bar = go.Figure()
-    top15_c = country_df.head(15).sort_values("Visitors", ascending=True)
-    if not top15_c.empty:
-        fig_bar.add_trace(go.Bar(
-            y=top15_c["Country"], x=top15_c["Visitors"], orientation="h",
-            marker=dict(color=top15_c["Revenue"], colorscale="Viridis", showscale=True, colorbar=dict(title="Revenue ($)")),
-            text=[f"{v/1e3:.0f}K" for v in top15_c["Visitors"]], textposition="outside"
-        ))
-    fig_bar.update_layout(**themed_layout(True), xaxis_title="Visitors", yaxis_title="")
+    if country_df.empty:
+        apply_empty_state_annotation(fig_bar)
+    else:
+        top15_c = country_df.head(15).sort_values("Visitors", ascending=True)
+        if not top15_c.empty:
+            fig_bar.add_trace(go.Bar(
+                y=top15_c["Country"], x=top15_c["Visitors"], orientation="h",
+                marker=dict(color=top15_c["Revenue"], colorscale="Viridis", showscale=True, colorbar=dict(title="Revenue ($)")),
+                text=[f"{v/1e3:.0f}K" for v in top15_c["Visitors"]], textposition="outside"
+            ))
+        fig_bar.update_layout(**themed_layout(True), xaxis_title="Visitors", yaxis_title="")
 
     # ── Treemap ──────────────────────────────────────────────────────────
     fig_tree = go.Figure()
-    if not country_df.empty:
+    if country_df.empty:
+        apply_empty_state_annotation(fig_tree)
+    else:
         fig_tree = px.treemap(country_df, path=[px.Constant("World"), "Country"],
-                              values="Visitors", color="Revenue", color_continuous_scale="RdYlBu_r")
+                               values="Visitors", color="Revenue", color_continuous_scale="RdYlBu_r")
         fig_tree.update_traces(root_color="rgba(0,0,0,0)")
-        fig_tree.update_layout(**themed_layout(True), margin=dict(t=10, l=10, r=10, b=10))
+        fig_tree.update_layout(**themed_layout(True))
+        fig_tree.update_layout(margin=dict(t=10, l=10, r=10, b=10))
 
     # ── City Bar ─────────────────────────────────────────────────────────
     fig_city = go.Figure()
-    top10_city = city_df.head(10).sort_values("Visitors", ascending=True)
-    if not top10_city.empty:
-        fig_city.add_trace(go.Bar(
-            y=top10_city["City"], x=top10_city["Visitors"], orientation="h",
-            marker_color="#F59E0B",
-            text=[f"{v/1e3:.0f}K" for v in top10_city["Visitors"]], textposition="outside"
-        ))
-    fig_city.update_layout(**themed_layout(True), xaxis_title="Visitors", yaxis_title="")
+    if city_df.empty:
+        apply_empty_state_annotation(fig_city)
+    else:
+        top10_city = city_df.head(10).sort_values("Visitors", ascending=True)
+        if not top10_city.empty:
+            fig_city.add_trace(go.Bar(
+                y=top10_city["City"], x=top10_city["Visitors"], orientation="h",
+                marker_color="#F59E0B",
+                text=[f"{v/1e3:.0f}K" for v in top10_city["Visitors"]], textposition="outside"
+            ))
+        fig_city.update_layout(**themed_layout(True), xaxis_title="Visitors", yaxis_title="")
 
     # ── Bubble Scatter ───────────────────────────────────────────────────
     fig_bubble = go.Figure()
-    if not country_df.empty:
+    if country_df.empty:
+        apply_empty_state_annotation(fig_bubble)
+    else:
         fig_bubble = px.scatter(
             country_df, x="AvgStay", y="AvgRating", size="Visitors", color="Country",
             hover_name="Country", size_max=40, color_discrete_sequence=PRIMARY_COLORS
@@ -182,13 +208,15 @@ def update_geo(years, seasons, types):
 
     # ── Sunburst (Country > City) ────────────────────────────────────────
     fig_sunburst = go.Figure()
-    if not city_df.empty:
-        # Get top 5 countries, then cities within them for cleaner sunburst
+    if city_df.empty:
+        apply_empty_state_annotation(fig_sunburst)
+    else:
         top5 = country_df.head(5)["Country"].tolist()
         city_sub = city_df[city_df["Country"].isin(top5)]
         fig_sunburst = px.sunburst(city_sub, path=["Country", "City"], values="Revenue",
                                    color="Visitors", color_continuous_scale="Blues")
-        fig_sunburst.update_layout(**themed_layout(True), margin=dict(t=10, l=10, r=10, b=10))
+        fig_sunburst.update_layout(**themed_layout(True))
+        fig_sunburst.update_layout(margin=dict(t=10, l=10, r=10, b=10))
 
     # ── Rankings Table ───────────────────────────────────────────────────
     if not country_df.empty:
